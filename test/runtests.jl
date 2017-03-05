@@ -1,5 +1,11 @@
 using POMCPOW
 using Base.Test
 
-# write your own tests here
-@test 1 == 2
+using POMDPModels
+using POMDPToolbox
+
+solver = POMCPOWSolver()
+
+pomdp = BabyPOMDP()
+
+test_solver(solver, pomdp, updater=updater(pomdp))
