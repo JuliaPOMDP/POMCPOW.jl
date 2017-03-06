@@ -13,6 +13,8 @@ import Base: mean, rand
 export
     POMCPOWSolver
 
+typealias IDict Base.ImmutableDict
+
 type POWNodeBelief{S,A,O}
     model::POMDP{S,A,O}
     s::S
