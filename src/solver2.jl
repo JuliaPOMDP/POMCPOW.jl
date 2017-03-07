@@ -1,11 +1,6 @@
-function make_node{S,A,O,B}(pomcp::POMCPPlanner{S,A,O,B,POMCPOWSolver}, belief)
-    ANodeType = POWActNode{A, O, POWObsNode{B,A,O}}
-    return RootNode{typeof(belief), A, ANodeType}(0, belief, Dict{A,ANodeType}())
-end
-
 function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, depth)
 
-    tree = get(pomcp.tree, POMCPOWTree{B,A,O}())
+    tree = pomcp.tree
 
     sol = pomcp.solver
 
@@ -40,7 +35,7 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, de
             push!(tree.total_n, total_n)
 
             if depth > 0 # no need for a rollout if this is the root node
-                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, (tree, h), depth)
+                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWObsNode2(tree, h), depth)
             else
                 return 0.
             end
@@ -53,12 +48,12 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, de
     local best_node
     for node in tree.tried
         n = tree.n[node]
-        if n == 0 && total_N <= 1
+        if n == 0 && total_n <= 1
             criterion_value = tree.v[node]
         elseif n == 0 && tree.v[node] == -Inf
             criterion_value = Inf
         else
-            criterion_value = tree.v[node] + sol.c*sqrt(log(total_N)/n)
+            criterion_value = tree.v[node] + sol.c*sqrt(log(total_n)/n)
         end
         if criterion_value >= best_criterion_val
             best_criterion_val = criterion_value

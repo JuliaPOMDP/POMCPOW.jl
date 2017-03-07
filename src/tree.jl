@@ -9,13 +9,17 @@ immutable POMCPOWTree{B,A,O}
     n_a_children::Vector{Int}
 
     # observation nodes
-    beliefs::Vector{B}
+    beliefs::Vector{B} # first element is #undef
     total_n::Vector{Int}
     tried::Vector{Vector{Int}} # when we have dpw this will need to be changed to Vector{A}
     o_child_lookup::Dict{Tuple{Int,A}, Int}
 
-    POMCPOWTree() = new(Int[], Int[], Vector{O}[], Dict{Tuple{Int,O}, Int}(), A[], Int[],
-                        Array(B,1), Int[], Vector{Int}[], Dict{Tuple{Int,A}, Int}())
+    # root
+    root_belief::Any
+
+    POMCPOWTree(root_belief) = new(Int[], Int[], Vector{O}[], Dict{Tuple{Int,O}, Int}(), A[], Int[],
+                        Array(B,1), Int[], Vector{Int}[], Dict{Tuple{Int,A}, Int}(),
+                        root_belief)
 end
 
 immutable POWTreeObsNode{B,A,O} <: BeliefNode{B,A,O}
