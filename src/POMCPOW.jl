@@ -13,8 +13,6 @@ import Base: mean, rand
 export
     POMCPOWSolver
 
-typealias IDict Base.ImmutableDict
-
 type POWNodeBelief{S,A,O}
     model::POMDP{S,A,O}
     s::S
@@ -62,6 +60,11 @@ mean(b::POWNodeBelief) = sum(b.particles.*b.weights)/sum(b.weights)
 
 # unweighted ParticleCollections don't get anything pushed to them
 function push_weighted!(::ParticleCollection, sp) end
+
+type POMCPPlanner2{SolverType} <: Policy
+    problem::POMDP
+    solver::SolverType
+end
 
 include("tree.jl")
 include("solver.jl")
