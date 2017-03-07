@@ -12,7 +12,8 @@ import Base: mean, rand
 import POMDPs: action
 
 export
-    POMCPOWSolver
+    POMCPOWSolver,
+    POMCPPlanner2
 
 type POWNodeBelief{S,A,O}
     model::POMDP{S,A,O}
@@ -23,7 +24,7 @@ type POWNodeBelief{S,A,O}
     weights::Vector{Float64}
     weight_sum::Float64
 end
-POWNodeBelief{S,A,O}(model, s::S, a::A, o::O) = POWNodeBelief{S,A,O}(model, s, a, o, S[], Float64[], 0.0)
+POWNodeBelief{S,A,O}(model::POMDP{S,A,O}, s::S, a::A, o::O) = POWNodeBelief{S,A,O}(model, s, a, o, S[], Float64[], 0.0)
 
 immutable POWNodeFilter <: Updater{POWNodeBelief} end
 
@@ -38,6 +39,7 @@ immutable POWNodeFilter <: Updater{POWNodeBelief} end
     estimate_value::Any         = RolloutEstimator(RandomSolver())
 
     enable_action_pw::Bool      = true
+    check_repeat_obs::Bool      = true
 
     alpha_observation::Float64  = 0.5
     k_observation::Float64      = 10.0

@@ -1,13 +1,13 @@
-function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, depth)
+function simulate{S,A,O}(pomcp::POMCPPlanner2{S,A,O,POMCPOWSolver}, h::Int, s::S, depth)
 
-    tree = pomcp.tree
+    tree = get(pomcp.tree)
 
     sol = pomcp.solver
 
     if POMDPs.discount(pomcp.problem)^depth < sol.eps ||
             POMDPs.isterminal(pomcp.problem, s) ||
             depth >= sol.max_depth
-        return 0
+        return 0.0
     end
 
     if sol.enable_action_pw
@@ -21,9 +21,9 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, de
             tried = Int[]
             for a in action_space_iter
                 anode += 1
-                n = init_N(sol.init_N, pomcp.problem, POWObsNode2(tree, h), a)
+                n = init_N(sol.init_N, pomcp.problem, POWTreeObsNode(tree, h), a)
                 push!(tree.n, n)
-                push!(tree.v, init_V(sol.init_V, pomcp.problem, POWObsNode2(tree, h), a))
+                push!(tree.v, init_V(sol.init_V, pomcp.problem, POWTreeObsNode(tree, h), a))
                 push!(tree.generated, O[])
                 push!(tree.a_labels, a)
                 push!(tree.n_a_children, 0)
@@ -35,9 +35,9 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, de
             push!(tree.total_n, total_n)
 
             if depth > 0 # no need for a rollout if this is the root node
-                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWObsNode2(tree, h), depth)
+                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)
             else
-                return 0.
+                return 0.0
             end
         end
     end
@@ -46,7 +46,7 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, de
     # Calculate UCT
     best_criterion_val = -Inf
     local best_node
-    for node in tree.tried
+    for node in tree.tried[h]
         n = tree.n[node]
         if n == 0 && total_n <= 1
             criterion_value = tree.v[node]
@@ -68,23 +68,19 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, de
 
         push!(tree.generated[best_node], o)
 
-        if haskey(tree.a_child_lookup, (best_node,o))
+        if sol.check_repeat_obs && haskey(tree.a_child_lookup, (best_node,o))
             hao = tree.a_child_lookup[(best_node, o)]
         else
-            if isa(pomcp.node_belief_updater, POWNodeFilter)
-                hao = length(tree.beliefs) + 1
-                b = POWNodeBelief(pomcp.problem, s, a, o)
-                push_weighted!(b, sp)
-                push!(tree.beliefs, b)
-            else
-                error("node_belief_updater must be a POWNodeFilter")
-            end
+            hao = length(tree.beliefs) + 1
+            push!(tree.beliefs, POWNodeBelief(pomcp.problem, s, a, o))
+            push_weighted!(tree.beliefs[hao], sp)
+
             tree.a_child_lookup[(best_node, o)] = hao
             tree.n_a_children[best_node] += 1
         end
 
     else
-        o = rand(sol.rng, best_node.generated)
+        o = rand(sol.rng, tree.generated[best_node])
         hao = tree.a_child_lookup[(best_node, o)]
         push_weighted!(tree.beliefs[hao], sp)
         sp = rand(sol.rng, tree.beliefs[hao])
@@ -95,7 +91,7 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner2{POMCPOWSolver}, h::Int, s::S, de
         warn("POMCP: +Inf reward. This is not recommended and may cause future errors.")
     end
 
-    R = r + POMDPs.discount(pomcp.problem)*simulate(pomcp, tree, hao, sp, depth+1)
+    R = r + POMDPs.discount(pomcp.problem)*simulate(pomcp, hao, sp, depth+1)
 
     tree.n[best_node] += 1
     tree.total_n[h] += 1

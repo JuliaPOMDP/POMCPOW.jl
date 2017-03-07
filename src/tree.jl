@@ -2,7 +2,7 @@
 immutable POMCPOWTree{B,A,O}
     # action nodes
     n::Vector{Int}
-    v::Vector{Int}
+    v::Vector{Float64}
     generated::Vector{Vector{O}}
     a_child_lookup::Dict{Tuple{Int,O}, Int}
     a_labels::Vector{A}

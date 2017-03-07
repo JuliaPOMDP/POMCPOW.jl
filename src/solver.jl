@@ -1,6 +1,6 @@
 function make_node{S,A,O,B}(pomcp::POMCPPlanner{S,A,O,B,POMCPOWSolver}, belief)
     ANodeType = POWActNode{A, O, POWObsNode{B,A,O}}
-    return IRootNode{typeof(belief), A, ANodeType}(0, belief, IDict{A,ANodeType}())
+    return RootNode{typeof(belief), A, ANodeType}(0, belief, Dict{A,ANodeType}())
 end
 
 function simulate{S,A,O,B}(pomcp::POMCPPlanner{S,A,O,B,POMCPOWSolver}, h::BeliefNode, s::S, depth)
@@ -18,13 +18,12 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner{S,A,O,B,POMCPOWSolver}, h::Belief
         if length(h.children) <= sol.k_action*total_N^sol.alpha_action
             a = next_action(sol.next_action, pomcp.problem, h.B, h) # XXX should this be a function of s or h.B?
             if !(a in keys(h.children))
-                h.children = IDict(h.children,
-                                a=>POWActNode(a,
+                h.children[a] = POWActNode(a,
                                     init_N(sol.init_N, pomcp.problem, h, a),
                                     init_V(sol.init_V, pomcp.problem, h, a),
                                     0,
                                     Vector{O}(),
-                                    IDict{O,POWObsNode{B,A,O}}()))
+                                    Dict{O,POWObsNode{B,A,O}}())
             end
             if length(h.children) <= 1
                 if depth > 0
@@ -38,13 +37,12 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner{S,A,O,B,POMCPOWSolver}, h::Belief
         if isempty(h.children)
             action_space_iter = POMDPs.iterator(POMDPs.actions(pomcp.problem))
             for a in action_space_iter
-                h.children = IDict(h.children,
-                            a => POWActNode(a,
+                h.children[a] = POWActNode(a,
                                 init_N(sol.init_N, pomcp.problem, h, a),
                                 init_V(sol.init_V, pomcp.problem, h, a),
                                 0,
                                 Vector{O}(),
-                                IDict{O,POWObsNode{B,A,O}}()))
+                                Dict{O,POWObsNode{B,A,O}}())
             end
 
             if depth > 0 # no need for a rollout if this is the root node
@@ -85,17 +83,17 @@ function simulate{S,A,O,B}(pomcp::POMCPPlanner{S,A,O,B,POMCPOWSolver}, h::Belief
             hao = best_node.children[o]
         else
             if isa(pomcp.node_belief_updater, ParticleReinvigorator)
-                hao = POWObsNode(o, 0, ParticleCollection{S}(), IDict{A,POWActNode{A,O,POWObsNode{B,A,O}}}())
+                hao = POWObsNode(o, 0, ParticleCollection{S}(), Dict{A,POWActNode{A,O,POWObsNode{B,A,O}}}())
                 push!(hao.B, sp)
             elseif isa(pomcp.node_belief_updater, POWNodeFilter)
                 hao = POWObsNode(o, 0, POWNodeBelief(pomcp.problem, s, a, o),
-                              IDict{A,POWActNode{A,O,POWObsNode{B,A,O}}}())
+                              Dict{A,POWActNode{A,O,POWObsNode{B,A,O}}}())
                 push_weighted!(hao.B, sp)
             else
                 new_belief = update(pomcp.node_belief_updater, h.B, a, o) # this relies on h.B not being modified
-                hao = POWObsNode(o, 0, new_belief, IDict{A,POWActNode{A,O,POWObsNode{B,A,O}}}())
+                hao = POWObsNode(o, 0, new_belief, Dict{A,POWActNode{A,O,POWObsNode{B,A,O}}}())
             end
-            best_node.children = IDict(best_node.children, o=>hao)
+            best_node.children[o] = hao
             best_node.n_children += 1
         end
 

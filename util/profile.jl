@@ -12,6 +12,7 @@ solver = POMCPOWSolver(tree_queries=50_000,
                      eps=0.01,
                      c=10.0,
                      enable_action_pw=false,
+                     alpha_observation=1/8,
                      rng=MersenneTwister(2))
 
 problem = LightDark1D()

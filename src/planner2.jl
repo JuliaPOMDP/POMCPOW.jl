@@ -1,16 +1,19 @@
 type POMCPPlanner2{S,A,O,SolverType} <: Policy
-    problem::POMDP{S,A,O}
     solver::SolverType
-    tree::POMCPOWTree{POWNodeBelief{S,A,O},A,O}
+    problem::POMDP{S,A,O}
+    tree::Nullable{POMCPOWTree{POWNodeBelief{S,A,O},A,O}}
+    solved_estimate::Any
 end
 
+POMCPPlanner2{S,A,O}(solver, problem::POMDP{S,A,O}) = POMCPPlanner2(solver, problem, Nullable{POMCPOWTree{POWNodeBelief{S,A,O},A,O}}(), convert_estimator(solver.estimate_value, solver, problem))
+
 function action{S,A,O,Sol}(pomcp::POMCPPlanner2{S,A,O,Sol}, b)
-    pomcp.tree = POMCPOWTree{POWNodeBelief,A,O}(b)
+    pomcp.tree = POMCPOWTree{POWNodeBelief{S,A,O},A,O}(b)
     return search(pomcp)
 end
 
 function search{S,A,O,Sol}(pomcp::POMCPPlanner2{S,A,O,Sol})
-    tree = pomcp.tree
+    tree = get(pomcp.tree)
     all_terminal = true
     for i in 1:pomcp.solver.tree_queries
         s = rand(pomcp.solver.rng, tree.root_belief)
