@@ -25,10 +25,8 @@ immutable POMCPOWTree{B,A,O}
                                                  sizehint!(Int[], sz),
 
                                                  sizehint!(Array(B,1), sz),
-                                                 sizehint!(Int[],sz),
-                                                 sizehint!(Vector{Int}[], sz),
-                                                 # sizehint!(Int[0], sz),
-                                                 # sizehint!(Vector{Int}[Int[]], sz),
+                                                 sizehint!(Int[0], sz),
+                                                 sizehint!(Vector{Int}[Int[]], sz),
                                                  Dict{Tuple{Int,A}, Int}(),
 
                                                  root_belief)

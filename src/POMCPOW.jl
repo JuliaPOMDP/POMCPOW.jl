@@ -40,7 +40,7 @@ end
 
 immutable POWNodeFilter <: Updater{POWNodeBelief} end
 
-@with_kw type POMCPOWSolver <: AbstractPOMCPSolver
+@with_kw immutable POMCPOWSolver <: AbstractPOMCPSolver
     eps::Float64                = 0.01
     max_depth::Int              = typemax(Int)
     c::Float64                  = 1
