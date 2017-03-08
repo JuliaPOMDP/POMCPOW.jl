@@ -8,7 +8,7 @@ using Gallium
 breakpoint(Pkg.dir("POMCPOW", "src", "solver2.jl"), 100)
 =#
 
-solver = POMCPOWSolver(tree_queries=50_000,
+solver = POMCPOWSolver(tree_queries=250_000,
                      eps=0.01,
                      c=10.0,
                      enable_action_pw=false,

@@ -8,13 +8,14 @@ end
 POMCPPlanner2{S,A,O}(solver, problem::POMDP{S,A,O}) = POMCPPlanner2(solver, problem, Nullable{POMCPOWTree{POWNodeBelief{S,A,O,typeof(problem)},A,O}}(), convert_estimator(solver.estimate_value, solver, problem))
 
 function action{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, b)
-    pomcp.tree = POMCPOWTree{POWNodeBelief{S,A,O,P},A,O}(b, pomcp.solver.tree_queries)
+    pomcp.tree = POMCPOWTree{POWNodeBelief{S,A,O,P},A,O}(b, 2*pomcp.solver.tree_queries)
     return search(pomcp)
 end
 
 function search(pomcp::POMCPPlanner2)
     tree = get(pomcp.tree)
     all_terminal = true
+    # gc_enable(false)
     for i in 1:pomcp.solver.tree_queries
         s = rand(pomcp.solver.rng, tree.root_belief)
         if !POMDPs.isterminal(pomcp.problem, s)
@@ -22,6 +23,7 @@ function search(pomcp::POMCPPlanner2)
             all_terminal = false
         end
     end
+    # gc_enable(true)
 
     if all_terminal
         throw(AllSamplesTerminal(tree.root_belief))
