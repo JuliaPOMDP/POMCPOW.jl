@@ -1,4 +1,4 @@
-function simulate{S,A,O}(pomcp::POMCPPlanner2{S,A,O,POMCPOWSolver}, h::Int, s::S, depth)
+function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
 
     tree = get(pomcp.tree)
 
@@ -27,7 +27,7 @@ function simulate{S,A,O}(pomcp::POMCPPlanner2{S,A,O,POMCPOWSolver}, h::Int, s::S
                 push!(tree.generated, O[])
                 push!(tree.a_labels, a)
                 push!(tree.n_a_children, 0)
-                tree.o_child_lookup[(h, a)] = anode
+                # tree.o_child_lookup[(h, a)] = anode
                 push!(tried, anode)
                 total_n += n
             end
@@ -35,7 +35,7 @@ function simulate{S,A,O}(pomcp::POMCPPlanner2{S,A,O,POMCPOWSolver}, h::Int, s::S
             push!(tree.total_n, total_n)
 
             if depth > 0 # no need for a rollout if this is the root node
-                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)
+                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)::Float64
             else
                 return 0.0
             end
@@ -72,8 +72,7 @@ function simulate{S,A,O}(pomcp::POMCPPlanner2{S,A,O,POMCPOWSolver}, h::Int, s::S
             hao = tree.a_child_lookup[(best_node, o)]
         else
             hao = length(tree.beliefs) + 1
-            push!(tree.beliefs, POWNodeBelief(pomcp.problem, s, a, o))
-            push_weighted!(tree.beliefs[hao], sp)
+            push!(tree.beliefs, POWNodeBelief{S,A,O}(pomcp.problem, s, a, o, sp))
 
             tree.a_child_lookup[(best_node, o)] = hao
             tree.n_a_children[best_node] += 1
@@ -99,6 +98,6 @@ function simulate{S,A,O}(pomcp::POMCPPlanner2{S,A,O,POMCPOWSolver}, h::Int, s::S
         tree.v[best_node] += (R-tree.v[best_node])/tree.n[best_node]
     end
 
-    return R
+    return R::Float64
 end
 

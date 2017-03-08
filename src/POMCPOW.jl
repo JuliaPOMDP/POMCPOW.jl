@@ -8,23 +8,33 @@ using POMDPToolbox
 using GenerativeModels
 
 import POMCP: simulate, make_node
-import Base: mean, rand
+import Base: mean, rand, insert!
 import POMDPs: action
 
 export
     POMCPOWSolver,
-    POMCPPlanner2
+    POMCPPlanner2,
+    CategoricalTree
 
-type POWNodeBelief{S,A,O}
+include("categorical_tree.jl")
+
+immutable POWNodeBelief{S,A,O}
     model::POMDP{S,A,O}
     s::S
     a::A
     o::O
-    particles::Vector{S}
-    weights::Vector{Float64}
-    weight_sum::Float64
+    dist::CategoricalTree{S}
+
+    POWNodeBelief(m,s,a,o,d) = new(m,s,a,o,d)
+    function POWNodeBelief(m::POMDP{S,A,O}, s::S, a::A, o::O, sp::S)
+        new(m, s, a, o, CategoricalTree{S}(sp, obs_weight(m, s, a, sp, o)))
+    end
 end
-POWNodeBelief{S,A,O}(model::POMDP{S,A,O}, s::S, a::A, o::O) = POWNodeBelief{S,A,O}(model, s, a, o, S[], Float64[], 0.0)
+
+function POWNodeBelief{S,A,O}(model::POMDP{S,A,O}, s::S, a::A, o::O, sp::S)
+    POWNodeBelief{S,A,O}(model, s, a, o,
+                         CategoricalTree{S}(sp, obs_weight(model, s, a, sp, o)))
+end
 
 immutable POWNodeFilter <: Updater{POWNodeBelief} end
 
@@ -33,7 +43,7 @@ immutable POWNodeFilter <: Updater{POWNodeBelief} end
     max_depth::Int              = typemax(Int)
     c::Float64                  = 1
     tree_queries::Int           = 100
-    rng::AbstractRNG            = Base.GLOBAL_RNG
+    rng::MersenneTwister        = Base.GLOBAL_RNG
     node_belief_updater::Union{Updater, DefaultReinvigoratorStub} = POWNodeFilter()
 
     estimate_value::Any         = RolloutEstimator(RandomSolver())
@@ -53,12 +63,10 @@ end
 
 function push_weighted!(b::POWNodeBelief, sp)
     w = obs_weight(b.model, b.s, b.a, sp, b.o)
-    push!(b.particles, sp)
-    push!(b.weights, w)
-    b.weight_sum += w
+    insert!(b.dist, sp, w)
 end
 
-rand(rng::AbstractRNG, b::POWNodeBelief) = rand(rng, WeightedParticleBelief(b.particles, b.weights, b.weight_sum))
+rand(rng::AbstractRNG, b::POWNodeBelief) = rand(rng, b.dist)
 mean(b::POWNodeBelief) = sum(b.particles.*b.weights)/sum(b.weights)
 
 # unweighted ParticleCollections don't get anything pushed to them

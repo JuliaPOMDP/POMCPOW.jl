@@ -17,9 +17,18 @@ immutable POMCPOWTree{B,A,O}
     # root
     root_belief::Any
 
-    POMCPOWTree(root_belief) = new(Int[], Int[], Vector{O}[], Dict{Tuple{Int,O}, Int}(), A[], Int[],
-                        Array(B,1), Int[], Vector{Int}[], Dict{Tuple{Int,A}, Int}(),
-                        root_belief)
+    POMCPOWTree(root_belief, sz::Int=1000) = new(sizehint!(Int[], sz),
+                                                 sizehint!(Int[], sz),
+                                                 sizehint!(Vector{O}[], sz),
+                                                 sizehint!(Dict{Tuple{Int,O}, Int}(), sz),
+                                                 sizehint!(A[], sz),
+                                                 sizehint!(Int[], sz),
+
+                                                 sizehint!(Array(B,1), sz),
+                                                 sizehint!(Int[], sz),
+                                                 sizehint!(Vector{Int}[], sz),
+                                                 sizehint!(Dict{Tuple{Int,A}, Int}(), sz),
+                                                 root_belief)
 end
 
 immutable POWTreeObsNode{B,A,O} <: BeliefNode{B,A,O}
