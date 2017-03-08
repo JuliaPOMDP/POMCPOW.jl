@@ -3,7 +3,7 @@ immutable POMCPOWTree{B,A,O}
     # action nodes
     n::Vector{Int}
     v::Vector{Float64}
-    generated::Vector{Vector{O}}
+    generated::Vector{Vector{Pair{O,Int}}}
     a_child_lookup::Dict{Tuple{Int,O}, Int}
     a_labels::Vector{A}
     n_a_children::Vector{Int}
@@ -19,7 +19,7 @@ immutable POMCPOWTree{B,A,O}
 
     POMCPOWTree(root_belief, sz::Int=1000) = new(sizehint!(Int[], sz),
                                                  sizehint!(Int[], sz),
-                                                 sizehint!(Vector{O}[], sz),
+                                                 sizehint!(Vector{Pair{O,Int}}[], sz),
                                                  sizehint!(Dict{Tuple{Int,O}, Int}(), sz),
                                                  sizehint!(A[], sz),
                                                  sizehint!(Int[], sz),

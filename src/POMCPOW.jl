@@ -18,21 +18,21 @@ export
 
 include("categorical_tree.jl")
 
-immutable POWNodeBelief{S,A,O}
-    model::POMDP{S,A,O}
+immutable POWNodeBelief{S,A,O,P}
+    model::P
     s::S
     a::A
     o::O
     dist::CategoricalTree{S}
 
     POWNodeBelief(m,s,a,o,d) = new(m,s,a,o,d)
-    function POWNodeBelief(m::POMDP{S,A,O}, s::S, a::A, o::O, sp::S)
+    function POWNodeBelief(m::P, s::S, a::A, o::O, sp::S)
         new(m, s, a, o, CategoricalTree{S}(sp, obs_weight(m, s, a, sp, o)))
     end
 end
 
 function POWNodeBelief{S,A,O}(model::POMDP{S,A,O}, s::S, a::A, o::O, sp::S)
-    POWNodeBelief{S,A,O}(model, s, a, o,
+    POWNodeBelief{S,A,O,typeof(model)}(model, s, a, o,
                          CategoricalTree{S}(sp, obs_weight(model, s, a, sp, o)))
 end
 

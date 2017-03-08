@@ -1,14 +1,14 @@
 type POMCPPlanner2{S,A,O,P,SolverType} <: Policy
     solver::SolverType
     problem::P
-    tree::Nullable{POMCPOWTree{POWNodeBelief{S,A,O},A,O}}
+    tree::Nullable{POMCPOWTree{POWNodeBelief{S,A,O,P},A,O}}
     solved_estimate::Any
 end
 
-POMCPPlanner2{S,A,O}(solver, problem::POMDP{S,A,O}) = POMCPPlanner2(solver, problem, Nullable{POMCPOWTree{POWNodeBelief{S,A,O},A,O}}(), convert_estimator(solver.estimate_value, solver, problem))
+POMCPPlanner2{S,A,O}(solver, problem::POMDP{S,A,O}) = POMCPPlanner2(solver, problem, Nullable{POMCPOWTree{POWNodeBelief{S,A,O,typeof(problem)},A,O}}(), convert_estimator(solver.estimate_value, solver, problem))
 
-function action{S,A,O,Sol}(pomcp::POMCPPlanner2{S,A,O,Sol}, b)
-    pomcp.tree = POMCPOWTree{POWNodeBelief{S,A,O},A,O}(b, pomcp.solver.tree_queries)
+function action{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, b)
+    pomcp.tree = POMCPOWTree{POWNodeBelief{S,A,O,P},A,O}(b, pomcp.solver.tree_queries)
     return search(pomcp)
 end
 

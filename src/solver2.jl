@@ -24,10 +24,10 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
                 n = init_N(sol.init_N, pomcp.problem, POWTreeObsNode(tree, h), a)
                 push!(tree.n, n)
                 push!(tree.v, init_V(sol.init_V, pomcp.problem, POWTreeObsNode(tree, h), a))
-                push!(tree.generated, O[])
+                push!(tree.generated, Pair{O,Int}[])
                 push!(tree.a_labels, a)
                 push!(tree.n_a_children, 0)
-                # tree.o_child_lookup[(h, a)] = anode
+                # tree.o_child_lookup[(h, a)] = anode # this is not needed if there is no action pw
                 push!(tried, anode)
                 total_n += n
             end
@@ -66,21 +66,22 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
 
     if tree.n_a_children[best_node] <= sol.k_observation*(tree.n[best_node]^sol.alpha_observation)
 
-        push!(tree.generated[best_node], o)
-
         if sol.check_repeat_obs && haskey(tree.a_child_lookup, (best_node,o))
             hao = tree.a_child_lookup[(best_node, o)]
         else
             hao = length(tree.beliefs) + 1
-            push!(tree.beliefs, POWNodeBelief{S,A,O}(pomcp.problem, s, a, o, sp))
+            push!(tree.beliefs, POWNodeBelief{S,A,O,P}(pomcp.problem, s, a, o, sp))
 
-            tree.a_child_lookup[(best_node, o)] = hao
+            if sol.check_repeat_obs
+                tree.a_child_lookup[(best_node, o)] = hao
+            end
             tree.n_a_children[best_node] += 1
         end
 
+        push!(tree.generated[best_node], o=>hao)
+
     else
-        o = rand(sol.rng, tree.generated[best_node])
-        hao = tree.a_child_lookup[(best_node, o)]
+        o, hao = rand(sol.rng, tree.generated[best_node])
         push_weighted!(tree.beliefs[hao], sp)
         sp = rand(sol.rng, tree.beliefs[hao])
         r = POMDPs.reward(pomcp.problem, s, a, sp) # should cache this so the user doesn't have to implement reward
