@@ -1,5 +1,5 @@
 
-immutable POMCPOWTree{B,A,O}
+immutable POMCPOWTree{B,A,O,RB}
     # action nodes
     n::Vector{Int}
     v::Vector{Float64}
@@ -15,7 +15,7 @@ immutable POMCPOWTree{B,A,O}
     o_child_lookup::Dict{Tuple{Int,A}, Int} # may not be maintained based on solver params
 
     # root
-    root_belief::Any
+    root_belief::RB
 
     POMCPOWTree(root_belief, sz::Int=1000) = new(sizehint!(Int[], sz),
                                                  sizehint!(Int[], sz),
@@ -46,8 +46,8 @@ end
     tree.total_n[h] += n
 end
 
-immutable POWTreeObsNode{B,A,O} <: BeliefNode{B,A,O}
-    tree::POMCPOWTree{B,A,O}
+immutable POWTreeObsNode{B,A,O,RB} <: BeliefNode{B,A,O}
+    tree::POMCPOWTree{B,A,O,RB}
     node::Int
 end
 

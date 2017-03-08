@@ -1,6 +1,7 @@
-function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
+function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, s::S, depth)
 
-    tree = get(pomcp.tree)
+    tree = h_node.tree
+    h = h_node.node
 
     sol = pomcp.solver
 
@@ -11,9 +12,14 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
     end
 
     if sol.enable_action_pw
-        if tree.n_a_children <= sol.k_action*tree.total_n[h]^sol.alpha_action
-            a = next_action(sol.next_action, pomcp.problem, tree.beliefs[h], POWTreeObsNode(tree, h))::A
-            if !sol.check_repeat_act || !haskey(tree.o_child_lookup[(h,a)])
+        total_n = tree.total_n[h]
+        if length(tree.tried[h]) <= sol.k_action*total_n^sol.alpha_action
+            if h == 1
+                a = next_action(pomcp.next_action, pomcp.problem, tree.root_belief, POWTreeObsNode(tree, h))
+            else
+                a = next_action(pomcp.next_action, pomcp.problem, tree.beliefs[h], POWTreeObsNode(tree, h))
+            end
+            if !sol.check_repeat_act || !haskey(tree.o_child_lookup, (h,a))
                 push_anode!(tree, h, a,
                             init_N(sol.init_N, pomcp.problem, POWTreeObsNode(tree, h), a),
                             init_V(sol.init_V, pomcp.problem, POWTreeObsNode(tree, h), a),
@@ -21,7 +27,7 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
             end
             if length(tree.tried[h]) <= 1
                 if depth > 0
-                    return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)::Float64
+                    return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)
                 else
                     return 0.0
                 end
@@ -39,7 +45,7 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
             end
 
             if depth > 0 # no need for a rollout if this is the root node
-                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)::Float64
+                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)
             else
                 return 0.0
             end
@@ -74,7 +80,7 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
             hao = tree.a_child_lookup[(best_node, o)]
         else
             hao = length(tree.beliefs) + 1
-            push!(tree.beliefs, POWNodeBelief{S,A,O,P}(pomcp.problem, s, a, o, sp))
+            push!(tree.beliefs, B(pomcp.problem, s, a, o, sp))
             push!(tree.total_n, 0)
             push!(tree.tried, Int[])
 
@@ -87,7 +93,9 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
         push!(tree.generated[best_node], o=>hao)
 
     else
-        o, hao = rand(sol.rng, tree.generated[best_node])
+        pair = rand(sol.rng, tree.generated[best_node])
+        o = pair.first
+        hao = pair.second
         push_weighted!(tree.beliefs[hao], sp)
         sp = rand(sol.rng, tree.beliefs[hao])
         r = POMDPs.reward(pomcp.problem, s, a, sp) # should cache this so the user doesn't have to implement reward
@@ -97,7 +105,7 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
         warn("POMCP: +Inf reward. This is not recommended and may cause future errors.")
     end
 
-    R = r + POMDPs.discount(pomcp.problem)*simulate(pomcp, hao, sp, depth+1)
+    R = r + POMDPs.discount(pomcp.problem)*simulate(pomcp, POWTreeObsNode(tree, hao), sp, depth+1)
 
     tree.n[best_node] += 1
     tree.total_n[h] += 1
@@ -105,6 +113,6 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
         tree.v[best_node] += (R-tree.v[best_node])/tree.n[best_node]
     end
 
-    return R::Float64
+    return R
 end
 

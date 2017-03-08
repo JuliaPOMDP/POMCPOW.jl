@@ -14,6 +14,8 @@ import POMDPs: action
 export
     POMCPOWSolver,
     POMCPPlanner2,
+    POMCPOWTree,
+    POWNodeBelief,
     CategoricalTree,
     CategoricalVector
 
