@@ -10,9 +10,9 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
         return 0.0
     end
 
-    if false # sol.enable_action_pw
+    if sol.enable_action_pw
         if tree.n_a_children <= sol.k_action*tree.total_n[h]^sol.alpha_action
-            a = next_action(sol.next_action, pomcp.problem, tree.beliefs[h], POWTreeObsNode(tree, h))
+            a = next_action(sol.next_action, pomcp.problem, tree.beliefs[h], POWTreeObsNode(tree, h))::A
             if !sol.check_repeat_act || !haskey(tree.o_child_lookup[(h,a)])
                 push_anode!(tree, h, a,
                             init_N(sol.init_N, pomcp.problem, POWTreeObsNode(tree, h), a),
@@ -21,7 +21,7 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
             end
             if length(tree.tried[h]) <= 1
                 if depth > 0
-                    return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)
+                    return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)::Float64
                 else
                     return 0.0
                 end
@@ -31,23 +31,12 @@ function simulate{S,A,O,P}(pomcp::POMCPPlanner2{S,A,O,P}, h::Int, s::S, depth)
         if isempty(tree.tried[h])
             action_space_iter = POMDPs.iterator(POMDPs.actions(pomcp.problem))
             anode = length(tree.n)
-            total_n = 0
-            tried = Int[]
             for a in action_space_iter
-                anode += 1
-                n = init_N(sol.init_N, pomcp.problem, POWTreeObsNode(tree, h), a)
-                push!(tree.n, n)
-                push!(tree.v, init_V(sol.init_V, pomcp.problem, POWTreeObsNode(tree, h), a))
-                push!(tree.generated, Pair{O,Int}[])
-                push!(tree.a_labels, a)
-                push!(tree.n_a_children, 0)
-                # tree.o_child_lookup[(h, a)] = anode # this is not needed if there is no action pw
-                # push!(tree.tried[h], anode)
-                # tree.total_n[h] += n
-                push!(tried, anode)
+                push_anode!(tree, h, a,
+                            init_N(sol.init_N, pomcp.problem, POWTreeObsNode(tree, h), a),
+                            init_V(sol.init_V, pomcp.problem, POWTreeObsNode(tree, h), a),
+                            false)
             end
-            tree.total_n[h] += total_n
-            tree.tried[h] = tried
 
             if depth > 0 # no need for a rollout if this is the root node
                 return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)::Float64
