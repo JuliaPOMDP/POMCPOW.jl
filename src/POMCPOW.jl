@@ -17,7 +17,10 @@ export
     POMCPOWTree,
     POWNodeBelief,
     CategoricalTree,
-    CategoricalVector
+    CategoricalVector,
+
+    n_children,
+    belief
 
 include("categorical_tree.jl")
 include("categorical_vector.jl")
@@ -72,7 +75,7 @@ function push_weighted!(b::POWNodeBelief, sp)
 end
 
 rand(rng::AbstractRNG, b::POWNodeBelief) = rand(rng, b.dist)
-mean(b::POWNodeBelief) = sum(b.particles.*b.weights)/sum(b.weights)
+mean(b::POWNodeBelief) = mean(b.dist)
 
 # unweighted ParticleCollections don't get anything pushed to them
 function push_weighted!(::ParticleCollection, sp) end

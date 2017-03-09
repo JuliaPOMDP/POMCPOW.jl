@@ -51,6 +51,9 @@ immutable POWTreeObsNode{B,A,O,RB} <: BeliefNode{B,A,O}
     node::Int
 end
 
+belief(h::POWTreeObsNode) = ifelse(h.node==1, h.tree.root_belief, h.tree.beliefs[h.node])
+n_children(h::POWTreeObsNode) = length(h.tree.tried[h.node])
+
 #=
 type POWActNode{A,O,BNodeType} <: AbstractActNode
     label::A
