@@ -21,7 +21,7 @@ mean(b::POWNodeBelief) = mean(b.dist)
 immutable POWNodeFilter end
 
 belief_type{P<:POMDP}(::Type{POWNodeFilter}, ::Type{P}) = POWNodeBelief{state_type(P), action_type(P), obs_type(P), P}
-init_belief{S,A,O,P<:POMDP}(::POWNodeFilter, p::P, s::S, a::A, o::O, sp::S) = POWNodeBelief(p, s, a, o, sp) 
+init_node_belief{S,A,O,P<:POMDP}(::POWNodeFilter, p::P, s::S, a::A, o::O, sp::S) = POWNodeBelief(p, s, a, o, sp) 
 function push_weighted!(b::POWNodeBelief, ::POWNodeFilter, s, sp)
     w = obs_weight(b.model, s, b.a, sp, b.o)
     insert!(b.dist, sp, w)
