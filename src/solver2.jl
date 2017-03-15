@@ -53,36 +53,23 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
     end
     total_n = tree.total_n[h]
 
-    # Calculate UCT
-    best_criterion_val = -Inf
-    local best_node
-    for node in tree.tried[h]
-        n = tree.n[node]
-        if n == 0 && total_n <= 1
-            criterion_value = tree.v[node]
-        elseif n == 0 && tree.v[node] == -Inf
-            criterion_value = Inf
-        else
-            criterion_value = tree.v[node] + sol.c*sqrt(log(total_n)/n)
-        end
-        if criterion_value >= best_criterion_val
-            best_criterion_val = criterion_value
-            best_node = node
-        end
-    end
+    best_node = select_best(pomcp.criterion, h_node)
+
     a = tree.a_labels[best_node]
 
     sp, o, r = GenerativeModels.generate_sor(pomcp.problem, s, a, sol.rng)
 
+    new_node = false
     if tree.n_a_children[best_node] <= sol.k_observation*(tree.n[best_node]^sol.alpha_observation)
-
         if sol.check_repeat_obs && haskey(tree.a_child_lookup, (best_node,o))
             hao = tree.a_child_lookup[(best_node, o)]
         else
+            new_node = true
             hao = length(tree.beliefs) + 1
             push!(tree.beliefs, B(pomcp.problem, s, a, o, sp))
             push!(tree.total_n, 0)
             push!(tree.tried, Int[])
+            push!(tree.o_labels, o)
 
             if sol.check_repeat_obs
                 tree.a_child_lookup[(best_node, o)] = hao
@@ -91,12 +78,13 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
         end
 
         push!(tree.generated[best_node], o=>hao)
+    end
 
-    else
+    if !new_node
         pair = rand(sol.rng, tree.generated[best_node])
         o = pair.first
         hao = pair.second
-        push_weighted!(tree.beliefs[hao], sp)
+        push_weighted!(tree.beliefs[hao], s, sp)
         sp = rand(sol.rng, tree.beliefs[hao])
         r = POMDPs.reward(pomcp.problem, s, a, sp) # should cache this so the user doesn't have to implement reward
     end

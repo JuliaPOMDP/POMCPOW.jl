@@ -13,6 +13,7 @@ immutable POMCPOWTree{B,A,O,RB}
     total_n::Vector{Int}
     tried::Vector{Vector{Int}} # when we have dpw this will need to be changed to Vector{A}
     o_child_lookup::Dict{Tuple{Int,A}, Int} # may not be maintained based on solver params
+    o_labels::Vector{O}
 
     # root
     root_belief::RB
@@ -28,6 +29,7 @@ immutable POMCPOWTree{B,A,O,RB}
                                                  sizehint!(Int[0], sz),
                                                  sizehint!(Vector{Int}[Int[]], sz),
                                                  Dict{Tuple{Int,A}, Int}(),
+                                                 sizehint!(Array(O,1), sz),
 
                                                  root_belief)
 end
@@ -44,7 +46,20 @@ end
     end
     push!(tree.tried[h], anode)
     tree.total_n[h] += n
+    return anode
 end
+
+# @inline function push_onode!{B}(tree::POMCPOWTree{B}, anode, o, 
+#     hao = length(tree.beliefs) + 1
+#     push!(tree.beliefs, B(pomcp.problem, s, a, o, sp))
+#     push!(tree.total_n, 0)
+#     push!(tree.tried, Int[])
+# 
+#     if sol.check_repeat_obs
+#         tree.a_child_lookup[(anode, o)] = hao
+#     end
+#     tree.n_a_children[anode] += 1
+
 
 immutable POWTreeObsNode{B,A,O,RB} <: BeliefNode{B,A,O}
     tree::POMCPOWTree{B,A,O,RB}

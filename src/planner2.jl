@@ -1,13 +1,19 @@
-type POMCPPlanner2{P,NA,SE,SolverType} <: Policy
+type POMCPPlanner2{P,C,NA,SE,SolverType} <: Policy
     solver::SolverType
     problem::P
+    criterion::C
     next_action::NA
     solved_estimate::SE
     tree::Nullable{Any} # this is just so you can look at the tree later
 end
 
 function POMCPPlanner2(solver, problem::POMDP)
-    POMCPPlanner2(solver, problem, solver.next_action, convert_estimator(solver.estimate_value, solver, problem), Nullable{Any}())
+    POMCPPlanner2(solver,
+                  problem,
+                  solver.criterion,
+                  solver.next_action,
+                  convert_estimator(solver.estimate_value, solver, problem),
+                  Nullable{Any}())
 end
 
 function action{P}(pomcp::POMCPPlanner2{P}, b)
@@ -35,15 +41,7 @@ function search(pomcp::POMCPPlanner2, tree::POMCPOWTree)
         throw(AllSamplesTerminal(tree.root_belief))
     end
 
-    best_node = first(tree.tried[1])
-    best_V = tree.v[best_node]
-    @assert !isnan(best_V)
-    for node in tree.tried[1][2:end]
-        if tree.v[node] >= best_V
-            best_V = tree.v[node]
-            best_node = node
-        end
-    end
+    best_node = select_best(pomcp.solver.final_criterion, POWTreeObsNode(tree,1))
 
     return tree.a_labels[best_node]
 end

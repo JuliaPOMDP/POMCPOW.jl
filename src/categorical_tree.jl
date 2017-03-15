@@ -1,5 +1,4 @@
 type CategoricalTree{T}
-    parent::Nullable{CategoricalTree{T}}
     isleaf::Bool
     item::T
     total::Float64
@@ -7,8 +6,7 @@ type CategoricalTree{T}
     lchild::CategoricalTree{T}
     rchild::CategoricalTree{T}
 
-    CategoricalTree(item, weight) = new(Nullable{CategoricalTree{T}}(), true, item, weight) # everything else is #undef
-    CategoricalTree(parent, item, weight) = new(parent, true, item, weight) # everything else is #undef
+    CategoricalTree(item, weight) = new(true, item, weight) # everything else is #undef
 end
 
 CategoricalTree{T}(item::T, weight) = CategoricalTree{T}(item, weight)
@@ -27,8 +25,8 @@ function insert!{T}(ct::CategoricalTree{T}, item::T, weight::Float64)
     end
     t.isleaf = false
     t.crit = weight
-    t.lchild = CategoricalTree{T}(t, item, weight)
-    t.rchild = CategoricalTree{T}(t, t.item, t.total)
+    t.lchild = CategoricalTree{T}(item, weight)
+    t.rchild = CategoricalTree{T}(t.item, t.total)
     t.total += weight
 end
 
@@ -48,26 +46,55 @@ function rand(r::Float64, ct::CategoricalTree) # r is a number between 0 and t.t
     return t.item
 end
 
-function mean(t::CategoricalTree)
-    if t.isleaf
-        return t.item
-    elseif t.lchild.isleaf && t.rchild.isleaf
-        return (t.lchild.total*t.lchild.item + t.rchild.total*t.rchild.item)/(t.lchild.total + t.rchild.item)
-    else
-        # to actually calculate the mean, would need to iterate through all leaves
-        @show t
-        error("mean(::CategoricalTree) is only implemented for trees with 1 or 2 leaves right now.")
+function mean{T}(t::CategoricalTree{T})
+    weighted_sum = zero(T)
+    for leaf in t
+        weighted_sum += leaf.item*leaf.total
     end
+    return weighted_sum/t.total
 end
 
-start{T}(t::CategoricalTree{T}) = Nullable{CategoricalTree{T}}(find_next_leaf(t))
-done(root::CategoricalTree{T}, state::Nullable{CategoricalTree{T}}) = isnull(state)
-
-function find_next_leaf(t::CategoricalTree{T})
-    if !t.isleaf # this is the first state
+immutable CTWithParent{T}
+    t::CategoricalTree{T}
+    p::Nullable{CTWithParent{T}}
 end
 
-length(t::CategoricalTree) = count(n for n in t)
+CTWithParent{T}(t::CategoricalTree{T}, p::CTWithParent{T}) = CTWithParent(t, Nullable{CTWithParent{T}}(p))
+
+Base.start{T}(t::CategoricalTree{T}) = find_next_leaf(CTWithParent(t, Nullable{CTWithParent{T}}())) => false
+Base.done(root::CategoricalTree, state::Pair) = state.second
+function Base.next(root::CategoricalTree, state::Pair)
+    nl = find_next_leaf(state.first)
+    return (state.first.t, nl => isnull(nl.p))
+end
+
+function find_next_leaf(t::CTWithParent)
+    if !isnull(t.p) # this is not the root node
+        p = get(t.p) # go up one
+        while t.t == p.t.rchild # we came from the right
+            if isnull(p.p) # we've reached the root
+                return p
+            end
+            # go up
+            t = p
+            p = get(t.p)
+        end
+        # down one right
+        t = CTWithParent(p.t.rchild, p)
+    end
+    while !t.t.isleaf # descent left
+        t = CTWithParent(t.t.lchild, t)
+    end
+    return t
+end
+
+function nleaves(t::CategoricalTree)
+    s = 0
+    for leaf in t
+        s += 1
+    end
+    return s
+end
 
 #=
 type CategoricalTree{T}
