@@ -54,7 +54,6 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
     total_n = tree.total_n[h]
 
     best_node = select_best(pomcp.criterion, h_node)
-
     a = tree.a_labels[best_node]
 
     sp, o, r = GenerativeModels.generate_sor(pomcp.problem, s, a, sol.rng)
@@ -66,7 +65,7 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
         else
             new_node = true
             hao = length(tree.beliefs) + 1
-            push!(tree.beliefs, B(pomcp.problem, s, a, o, sp))
+            push!(tree.beliefs, init_belief(pomcp.node_belief_updater, pomcp.problem, s, a, o, sp))
             push!(tree.total_n, 0)
             push!(tree.tried, Int[])
             push!(tree.o_labels, o)
@@ -84,7 +83,7 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
         pair = rand(sol.rng, tree.generated[best_node])
         o = pair.first
         hao = pair.second
-        push_weighted!(tree.beliefs[hao], s, sp)
+        push_weighted!(tree.beliefs[hao], pomcp.node_belief_updater, s, sp)
         sp = rand(sol.rng, tree.beliefs[hao])
         r = POMDPs.reward(pomcp.problem, s, a, sp) # should cache this so the user doesn't have to implement reward
     end

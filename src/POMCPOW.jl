@@ -30,25 +30,8 @@ export
 
 include("categorical_tree.jl")
 include("categorical_vector.jl")
+include("beliefs.jl")
 
-immutable POWNodeBelief{S,A,O,P}
-    model::P
-    a::A
-    o::O
-    dist::CategoricalTree{S}
-
-    POWNodeBelief(m,a,o,d) = new(m,a,o,d)
-    function POWNodeBelief(m::P, s::S, a::A, o::O, sp::S)
-        new(m, a, o, CategoricalTree{S}(sp, obs_weight(m, s, a, sp, o)))
-    end
-end
-
-function POWNodeBelief{S,A,O}(model::POMDP{S,A,O}, s::S, a::A, o::O, sp::S)
-    POWNodeBelief{S,A,O,typeof(model)}(model, s, a, o,
-                         CategoricalTree{S}(sp, obs_weight(model, s, a, sp, o)))
-end
-
-immutable POWNodeFilter <: Updater{POWNodeBelief} end
 
 include("tree.jl")
 include("criteria.jl")
@@ -60,7 +43,7 @@ include("criteria.jl")
     final_criterion             = MaxQ()
     tree_queries::Int           = 100
     rng::MersenneTwister        = Base.GLOBAL_RNG
-    node_belief_updater::Union{Updater, DefaultReinvigoratorStub} = POWNodeFilter()
+    node_belief_updater         = POWNodeFilter()
 
     estimate_value::Any         = RolloutEstimator(RandomSolver(rng))
 
@@ -77,14 +60,6 @@ include("criteria.jl")
     next_action::Any            = RandomActionGenerator(rng)
     default_action::Any         = ExceptionRethrow()
 end
-
-function push_weighted!(b::POWNodeBelief, s, sp)
-    w = obs_weight(b.model, s, b.a, sp, b.o)
-    insert!(b.dist, sp, w)
-end
-
-rand(rng::AbstractRNG, b::POWNodeBelief) = rand(rng, b.dist)
-mean(b::POWNodeBelief) = mean(b.dist)
 
 # unweighted ParticleCollections don't get anything pushed to them
 function push_weighted!(::ParticleCollection, sp) end

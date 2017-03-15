@@ -1,6 +1,7 @@
-type POMCPPlanner2{P,C,NA,SE,SolverType} <: Policy
+type POMCPPlanner2{P,NBU,C,NA,SE,SolverType} <: Policy
     solver::SolverType
     problem::P
+    node_belief_updater::NBU
     criterion::C
     next_action::NA
     solved_estimate::SE
@@ -10,17 +11,19 @@ end
 function POMCPPlanner2(solver, problem::POMDP)
     POMCPPlanner2(solver,
                   problem,
+                  solver.node_belief_updater,
                   solver.criterion,
                   solver.next_action,
                   convert_estimator(solver.estimate_value, solver, problem),
                   Nullable{Any}())
 end
 
-function action{P}(pomcp::POMCPPlanner2{P}, b)
+function action{P,NBU}(pomcp::POMCPPlanner2{P,NBU}, b)
     S = state_type(P)
     A = action_type(P)
     O = obs_type(P)
-    tree = POMCPOWTree{POWNodeBelief{S,A,O,P},A,O,typeof(b)}(b, 2*pomcp.solver.tree_queries)
+    B = belief_type(NBU,P)
+    tree = POMCPOWTree{B,A,O,typeof(b)}(b, 2*pomcp.solver.tree_queries)
     pomcp.tree = tree
     return search(pomcp, tree)
 end
