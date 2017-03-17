@@ -1,19 +1,34 @@
 type CategoricalVector{T}
     items::Vector{T}
-    weights::Vector{Float64}
-    weight_sum::Float64
+    cdf::Vector{Float64}
 
-    CategoricalVector(item, weight) = new(T[item], Float64[weight], weight)
+    CategoricalVector(item::T, weight::Float64) = new(T[item], Float64[weight])
 end
 
-CategoricalVector{T}(item::T, weight::Float64) = CategoricalVector{T}(T[item], Float64[weight], weight)
+CategoricalVector{T}(item::T, weight::Float64) = CategoricalVector{T}(item, weight)
 
-function insert!{T}(t::CategoricalVector{T}, item::T, weight::Float64)
-    push!(t.items, item)
-    push!(t.weights, weight)
-    t.weight_sum += weight
+function insert!{T}(c::CategoricalVector{T}, item::T, weight::Float64)
+    push!(c.items, item)
+    push!(c.cdf, c.cdf[end]+weight)
 end
 
+function rand(rng::AbstractRNG, d::CategoricalVector)
+    t = rand(rng)*d.cdf[end]
+    large = length(d.cdf) # index of cdf value that is bigger than t
+    small = 0 # index of cdf value that is smaller than t
+    while large > small + 1
+        new = div(small + large, 2)
+        if t < d.cdf[new]
+            large = new
+        else
+            small = new
+        end
+    end
+    return d.items[large]
+end
+
+
+#=
 function rand(rng::AbstractRNG, d::CategoricalVector)
     t = rand(rng) * d.weight_sum
     i = 1
@@ -24,3 +39,4 @@ function rand(rng::AbstractRNG, d::CategoricalVector)
     end
     return d.items[i]
 end
+=#

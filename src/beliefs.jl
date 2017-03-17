@@ -2,11 +2,11 @@ immutable POWNodeBelief{S,A,O,P}
     model::P
     a::A
     o::O
-    dist::CategoricalTree{S}
+    dist::CategoricalVector{S}
 
     POWNodeBelief(m,a,o,d) = new(m,a,o,d)
     function POWNodeBelief(m::P, s::S, a::A, o::O, sp::S)
-        new(m, a, o, CategoricalTree{S}(sp, obs_weight(m, s, a, sp, o)))
+        new(m, a, o, CategoricalVector{S}(sp, obs_weight(m, s, a, sp, o)))
     end
 end
 

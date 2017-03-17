@@ -1,8 +1,7 @@
 using POMCPOW
 using Base.Test
 
-t = CategoricalTree(1, 1.0)
-@test POMCPOW.nleaves(t) == 1
+t = CategoricalVector(1, 1.0)
 insert!(t, 2, 3.0)
 rand(Base.GLOBAL_RNG, t)
 
@@ -18,12 +17,6 @@ end
 @time for i in 1:1000
     push!(results, rand(Base.GLOBAL_RNG, t))
 end
-
-#=
-for leaf in t
-    println("$(leaf.item): $(leaf.total)")
-end
-=#
 
 #=
 using Plots

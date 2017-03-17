@@ -20,7 +20,6 @@ problem = LightDark1D()
 policy = POMCPPlanner2(solver, problem)
 ib = initial_state_distribution(problem)
 
-#=
 a = action(policy, ib)
 
 @time a = action(policy, ib)
@@ -28,7 +27,6 @@ a = action(policy, ib)
 Profile.clear()
 @profile a = action(policy, ib)
 ProfileView.view()
-=#
 
 #=
 P = typeof(problem)
@@ -40,6 +38,7 @@ tree = POMCPOWTree{POWNodeBelief{S,A,O,P},A,O,typeof(ib)}(ib, 500_000)
 @code_warntype POMCPOW.simulate(policy, POMCPOW.POWTreeObsNode(tree, 1), rand(Base.GLOBAL_RNG, ib), 10)
 =#
 
+#=
 solver = POMCPOWSolver(tree_queries=30,
                      eps=0.01,
                      criterion=MaxUCB(10.0),
@@ -51,3 +50,4 @@ solver = POMCPOWSolver(tree_queries=30,
 policy = POMCPPlanner2(solver, problem)
 a = action(policy, ib)
 blink(policy)
+=#
