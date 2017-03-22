@@ -27,6 +27,14 @@ function rand(rng::AbstractRNG, d::CategoricalVector)
     return d.items[large]
 end
 
+function mean(d::CategoricalVector)
+    sum = first(d.items)*first(d.cdf)
+    for i in 2:length(d.items)
+        sum += d.items[i]*(d.cdf[i]-d.cdf[i-1])
+    end
+    return sum/last(d.cdf)
+end
+
 
 #=
 function rand(rng::AbstractRNG, d::CategoricalVector)
