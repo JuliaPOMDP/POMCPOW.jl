@@ -1,7 +1,7 @@
 type POMCPPlanner2{P,NBU,C,NA,SE,SolverType} <: Policy
     solver::SolverType
     problem::P
-    node_belief_updater::NBU
+    node_sr_belief_updater::NBU
     criterion::C
     next_action::NA
     solved_estimate::SE
@@ -11,7 +11,7 @@ end
 function POMCPPlanner2(solver, problem::POMDP)
     POMCPPlanner2(solver,
                   problem,
-                  solver.node_belief_updater,
+                  solver.node_sr_belief_updater,
                   solver.criterion,
                   solver.next_action,
                   convert_estimator(solver.estimate_value, solver, problem),

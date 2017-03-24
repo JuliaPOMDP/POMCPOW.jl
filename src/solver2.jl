@@ -17,7 +17,7 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
             if h == 1
                 a = next_action(pomcp.next_action, pomcp.problem, tree.root_belief, POWTreeObsNode(tree, h))
             else
-                a = next_action(pomcp.next_action, pomcp.problem, tree.beliefs[h], POWTreeObsNode(tree, h))
+                a = next_action(pomcp.next_action, pomcp.problem, StateBelief(tree.sr_beliefs[h]), POWTreeObsNode(tree, h))
             end
             if !sol.check_repeat_act || !haskey(tree.o_child_lookup, (h,a))
                 push_anode!(tree, h, a,
@@ -64,8 +64,8 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
             hao = tree.a_child_lookup[(best_node, o)]
         else
             new_node = true
-            hao = length(tree.beliefs) + 1
-            push!(tree.beliefs, init_node_belief(pomcp.node_belief_updater, pomcp.problem, s, a, o, sp))
+            hao = length(tree.sr_beliefs) + 1
+            push!(tree.sr_beliefs, init_node_sr_belief(pomcp.node_sr_belief_updater, pomcp.problem, s, a, sp, o, r))
             push!(tree.total_n, 0)
             push!(tree.tried, Int[])
             push!(tree.o_labels, o)
@@ -83,9 +83,8 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
         pair = rand(sol.rng, tree.generated[best_node])
         o = pair.first
         hao = pair.second
-        push_weighted!(tree.beliefs[hao], pomcp.node_belief_updater, s, sp)
-        sp = rand(sol.rng, tree.beliefs[hao])
-        r = POMDPs.reward(pomcp.problem, s, a, sp) # should cache this so the user doesn't have to implement reward
+        push_weighted!(tree.sr_beliefs[hao], pomcp.node_sr_belief_updater, s, sp, r)
+        sp, r = rand(sol.rng, tree.sr_beliefs[hao])
     end
 
     if r == Inf

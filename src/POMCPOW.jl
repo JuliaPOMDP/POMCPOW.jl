@@ -43,7 +43,7 @@ include("criteria.jl")
     final_criterion             = MaxQ()
     tree_queries::Int           = 100
     rng::MersenneTwister        = Base.GLOBAL_RNG
-    node_belief_updater         = POWNodeFilter()
+    node_sr_belief_updater         = POWNodeFilter()
 
     estimate_value::Any         = RolloutEstimator(RandomSolver(rng))
 
@@ -63,8 +63,6 @@ end
 
 # unweighted ParticleCollections don't get anything pushed to them
 function push_weighted!(::ParticleCollection, sp) end
-
-include("solver.jl")
 
 include("planner2.jl")
 include("solver2.jl")

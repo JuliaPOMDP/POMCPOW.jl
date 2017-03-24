@@ -9,7 +9,7 @@ immutable POMCPOWTree{B,A,O,RB}
     n_a_children::Vector{Int}
 
     # observation nodes
-    beliefs::Vector{B} # first element is #undef
+    sr_beliefs::Vector{B} # first element is #undef
     total_n::Vector{Int}
     tried::Vector{Vector{Int}} # when we have dpw this will need to be changed to Vector{A}
     o_child_lookup::Dict{Tuple{Int,A}, Int} # may not be maintained based on solver params
@@ -49,40 +49,10 @@ end
     return anode
 end
 
-# @inline function push_onode!{B}(tree::POMCPOWTree{B}, anode, o, 
-#     hao = length(tree.beliefs) + 1
-#     push!(tree.beliefs, B(pomcp.problem, s, a, o, sp))
-#     push!(tree.total_n, 0)
-#     push!(tree.tried, Int[])
-# 
-#     if sol.check_repeat_obs
-#         tree.a_child_lookup[(anode, o)] = hao
-#     end
-#     tree.n_a_children[anode] += 1
-
-
 immutable POWTreeObsNode{B,A,O,RB} <: BeliefNode{B,A,O}
     tree::POMCPOWTree{B,A,O,RB}
     node::Int
 end
 
-belief(h::POWTreeObsNode) = ifelse(h.node==1, h.tree.root_belief, h.tree.beliefs[h.node])
+belief(h::POWTreeObsNode) = ifelse(h.node==1, h.tree.root_belief, StateBelief(h.tree.sr_beliefs[h.node]))
 n_children(h::POWTreeObsNode) = length(h.tree.tried[h.node])
-
-#=
-type POWActNode{A,O,BNodeType} <: AbstractActNode
-    label::A
-    N::Int
-    V::Float64
-    n_children::Int
-    generated::Vector{O}
-    children::Dict{O,BNodeType}
-end
-
-type POWObsNode{Belief,A,O} <: BeliefNode{Belief,A,O}
-    label::O
-    N::Int
-    B::Belief
-    children::Dict{A,POWActNode{A,O,POWObsNode{Belief,A,O}}}
-end
-=#

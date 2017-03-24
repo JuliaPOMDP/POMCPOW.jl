@@ -7,6 +7,8 @@ end
 
 CategoricalVector{T}(item::T, weight::Float64) = CategoricalVector{T}(item, weight)
 
+n_items(d::CategoricalVector) = length(d.items)
+
 function insert!{T}(c::CategoricalVector{T}, item::T, weight::Float64)
     push!(c.items, item)
     push!(c.cdf, c.cdf[end]+weight)
@@ -35,6 +37,13 @@ function mean(d::CategoricalVector)
     return sum/last(d.cdf)
 end
 
+function first_mean{S}(d::CategoricalVector{Tuple{S,Float64}})
+    sum = first(first(d.items))*first(d.cdf)
+    for i in 2:length(d.items)
+        sum += first(d.items[i])*(d.cdf[i]-d.cdf[i-1])
+    end
+    return sum/last(d.cdf)
+end
 
 #=
 function rand(rng::AbstractRNG, d::CategoricalVector)
