@@ -23,7 +23,7 @@ function create_json(v::POMCPOWVisualizer)
             tt_tag = tooltip_tag(obs)
         else
             obs = t.o_labels[id]
-            tt_tag = "$(tooltip_tag(obs)) [$(nleaves(t.beliefs[id].dist)) particles]"
+            tt_tag = "$(tooltip_tag(obs)) [$(n_items(t.beliefs[id].dist)) particles]"
         end
         nd[id] = Dict("id"=>id,
                       "type"=>:obs,

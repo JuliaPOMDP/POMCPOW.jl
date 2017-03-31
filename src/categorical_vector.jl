@@ -35,6 +35,7 @@ function mean(d::CategoricalVector)
     return sum/last(d.cdf)
 end
 
+n_items(d::CategoricalVector) = length(d.items)
 
 #=
 function rand(rng::AbstractRNG, d::CategoricalVector)
