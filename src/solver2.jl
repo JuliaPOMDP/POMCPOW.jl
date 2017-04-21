@@ -56,7 +56,7 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
     best_node = select_best(pomcp.criterion, h_node)
     a = tree.a_labels[best_node]
 
-    sp, o, r = GenerativeModels.generate_sor(pomcp.problem, s, a, sol.rng)
+    sp, o, r = generate_sor(pomcp.problem, s, a, sol.rng)
 
     new_node = false
     if tree.n_a_children[best_node] <= sol.k_observation*(tree.n[best_node]^sol.alpha_observation)
