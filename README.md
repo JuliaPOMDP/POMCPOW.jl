@@ -24,8 +24,8 @@ using POMCPOW
 using POMDPModels
 using POMDPToolbox
 
-solver = POMCPOWSolver()
-pomdp = TigerPOMDP() # from POMDPModels
+solver = POMCPOWSolver(criterion=MaxUCB(20.0))
+pomdp = BabyPOMDP() # from POMDPModels
 planner = solve(solver, pomdp)
 
 hr = HistoryRecorder(max_steps=100)
