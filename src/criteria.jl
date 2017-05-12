@@ -7,15 +7,15 @@ function select_best(crit::MaxUCB, h_node::POWTreeObsNode)
     h = h_node.node
     best_criterion_val = -Inf
     local best_node
-    total_n = tree.total_n[h]
+    ltn = log(tree.total_n[h])
     for node in tree.tried[h]
         n = tree.n[node]
-        if n == 0 && total_n <= 1
+        if n == 0 && ltn <= 0.0
             criterion_value = tree.v[node]
         elseif n == 0 && tree.v[node] == -Inf
             criterion_value = Inf
         else
-            criterion_value = tree.v[node] + crit.c*sqrt(log(total_n)/n)
+            criterion_value = tree.v[node] + crit.c*sqrt(ltn/n)
         end
         if criterion_value >= best_criterion_val
             best_criterion_val = criterion_value
