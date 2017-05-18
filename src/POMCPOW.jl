@@ -17,6 +17,7 @@ export
     POWNodeBelief,
     CategoricalTree,
     CategoricalVector,
+    FORollout,
 
     MaxUCB,
     MaxQ,
