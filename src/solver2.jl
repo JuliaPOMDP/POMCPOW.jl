@@ -21,8 +21,8 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
             end
             if !sol.check_repeat_act || !haskey(tree.o_child_lookup, (h,a))
                 push_anode!(tree, h, a,
-                            init_N(sol.init_N, pomcp.problem, POWTreeObsNode(tree, h), a),
-                            init_V(sol.init_V, pomcp.problem, POWTreeObsNode(tree, h), a),
+                            init_N(pomcp.init_N, pomcp.problem, POWTreeObsNode(tree, h), a),
+                            init_V(pomcp.init_V, pomcp.problem, POWTreeObsNode(tree, h), a),
                             sol.check_repeat_act)
             end
             if length(tree.tried[h]) <= 1
@@ -39,8 +39,8 @@ function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, 
             anode = length(tree.n)
             for a in action_space_iter
                 push_anode!(tree, h, a,
-                            init_N(sol.init_N, pomcp.problem, POWTreeObsNode(tree, h), a),
-                            init_V(sol.init_V, pomcp.problem, POWTreeObsNode(tree, h), a),
+                            init_N(pomcp.init_N, pomcp.problem, POWTreeObsNode(tree, h), a),
+                            init_V(pomcp.init_V, pomcp.problem, POWTreeObsNode(tree, h), a),
                             false)
             end
 
