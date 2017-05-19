@@ -127,8 +127,8 @@ Fields:
     k_observation::Float64      = 10.0
     alpha_action::Float64       = 0.5
     k_action::Float64           = 10.0
-    init_V::Float64             = 0.0
-    init_N::Int                 = 0
+    init_V::Any                 = 0.0
+    init_N::Any                 = 0
     next_action::Any            = RandomActionGenerator(rng)
     default_action::Any         = ExceptionRethrow()
 end

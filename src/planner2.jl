@@ -1,10 +1,12 @@
-type POMCPPlanner2{P,NBU,C,NA,SE,SolverType} <: Policy
+type POMCPPlanner2{P,NBU,C,NA,SE,IN,IV,SolverType} <: Policy
     solver::SolverType
     problem::P
     node_sr_belief_updater::NBU
     criterion::C
     next_action::NA
     solved_estimate::SE
+    init_N::IN
+    init_V::IV
     tree::Nullable{Any} # this is just so you can look at the tree later
 end
 
@@ -15,6 +17,8 @@ function POMCPPlanner2(solver, problem::POMDP)
                   solver.criterion,
                   solver.next_action,
                   convert_estimator(solver.estimate_value, solver, problem),
+                  solver.init_N,
+                  solver.init_V,
                   Nullable{Any}())
 end
 
