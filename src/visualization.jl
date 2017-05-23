@@ -4,6 +4,7 @@ import MCTS: AbstractTreeVisualizer, node_tag, tooltip_tag, create_json, blink
 type POMCPOWVisualizer <: AbstractTreeVisualizer
     tree::POMCPOWTree
 end
+POMCPOWVisualizer(planner::POMCPPlanner2) = POMCPOWVisualizer(get(planner.tree))
 
 blink(planner::POMCPPlanner2) = blink(POMCPOWVisualizer(get(planner.tree)))
 

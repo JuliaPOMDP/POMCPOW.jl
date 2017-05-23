@@ -18,6 +18,7 @@ export
     CategoricalTree,
     CategoricalVector,
     FORollout,
+    FOValue,
 
     MaxUCB,
     MaxQ,
@@ -26,6 +27,7 @@ export
     n_children,
     belief,
 
+    POMCPOWVisualizer,
     blink
 
 include("categorical_tree.jl")
