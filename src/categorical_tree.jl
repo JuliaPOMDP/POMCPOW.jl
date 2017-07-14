@@ -1,4 +1,4 @@
-type CategoricalTree{T}
+mutable struct CategoricalTree{T}
     isleaf::Bool
     item::T
     total::Float64
@@ -6,7 +6,7 @@ type CategoricalTree{T}
     lchild::CategoricalTree{T}
     rchild::CategoricalTree{T}
 
-    CategoricalTree(item, weight) = new(true, item, weight) # everything else is #undef
+    CategoricalTree{T}(item, weight) where {T} = new(true, item, weight) # everything else is #undef
 end
 
 CategoricalTree{T}(item::T, weight) = CategoricalTree{T}(item, weight)
@@ -54,7 +54,7 @@ function mean{T}(t::CategoricalTree{T})
     return weighted_sum/t.total
 end
 
-immutable CTWithParent{T}
+struct CTWithParent{T}
     t::CategoricalTree{T}
     p::Nullable{CTWithParent{T}}
 end
@@ -120,7 +120,7 @@ CategoricalTree{T}(item::T, weight) = CategoricalTree{T}(item, weight)
 
 function insert!{T}(t::CategoricalTree{T}, item::T, weight::Float64)
     n = 1
-    try 
+    try
         while !t.isleaf[n]
             if t.crits[n] < 0.5*t.totals[n]
                 t.crits[n] += weight
@@ -165,4 +165,3 @@ function rand(r::Float64, t::CategoricalTree) # r is a number between 0 and t.to
     return t.items[n]
 end
 =#
-

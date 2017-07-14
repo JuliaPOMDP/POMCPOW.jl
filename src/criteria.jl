@@ -1,4 +1,4 @@
-immutable MaxUCB
+struct MaxUCB
     c::Float64
 end
 
@@ -25,7 +25,7 @@ function select_best(crit::MaxUCB, h_node::POWTreeObsNode)
     return best_node
 end
 
-immutable MaxQ end
+struct MaxQ end
 
 function select_best(crit::MaxQ, h_node::POWTreeObsNode)
     tree = h_node.tree
@@ -42,7 +42,7 @@ function select_best(crit::MaxQ, h_node::POWTreeObsNode)
     return best_node
 end
 
-immutable MaxTries end
+struct MaxTries end
 
 function select_best(crit::MaxTries, h_node::POWTreeObsNode)
     tree = h_node.tree
