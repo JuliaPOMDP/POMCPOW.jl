@@ -110,7 +110,7 @@ Fields:
     If it is an object `a`, `default_action(a, belief, ex)` will be called, and
     if this method is not implemented, `a` will be returned directly.
 """
-@with_kw immutable POMCPOWSolver <: AbstractPOMCPSolver
+@with_kw struct POMCPOWSolver <: AbstractPOMCPSolver
     eps::Float64                = 0.01
     max_depth::Int              = typemax(Int)
     criterion                   = MaxUCB(1.0)

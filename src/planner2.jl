@@ -1,4 +1,4 @@
-type POMCPPlanner2{P,NBU,C,NA,SE,IN,IV,SolverType} <: Policy
+mutable struct POMCPPlanner2{P,NBU,C,NA,SE,IN,IV,SolverType} <: Policy
     solver::SolverType
     problem::P
     node_sr_belief_updater::NBU
