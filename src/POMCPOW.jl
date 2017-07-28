@@ -1,18 +1,20 @@
 module POMCPOW
 
 using POMDPs
-using POMCP
+using BasicPOMCP
 using ParticleFilters
 using Parameters
 using POMDPToolbox
+using MCTS
 
-import POMCP: simulate, make_node
+using BasicPOMCP: convert_estimator
+
 import Base: mean, rand, insert!
 import POMDPs: action, solve
 
 export
     POMCPOWSolver,
-    POMCPPlanner2,
+    POMCPOWPlanner,
     POMCPOWTree,
     POWNodeBelief,
     CategoricalTree,
@@ -24,11 +26,16 @@ export
     MaxQ,
     MaxTries,
 
+    init_N,
+    init_V,
+
     n_children,
     belief,
 
     POMCPOWVisualizer,
     blink
+
+const init_V = init_Q
 
 include("categorical_tree.jl")
 include("categorical_vector.jl")
@@ -110,7 +117,7 @@ Fields:
     If it is an object `a`, `default_action(a, belief, ex)` will be called, and
     if this method is not implemented, `a` will be returned directly.
 """
-@with_kw immutable POMCPOWSolver <: AbstractPOMCPSolver
+@with_kw struct POMCPOWSolver <: AbstractPOMCPSolver
     eps::Float64                = 0.01
     max_depth::Int              = typemax(Int)
     criterion                   = MaxUCB(1.0)
@@ -142,7 +149,7 @@ include("planner2.jl")
 include("solver2.jl")
 
 function solve(solver::POMCPOWSolver, problem::POMDP)
-    return POMCPPlanner2(solver, problem)
+    return POMCPOWPlanner(solver, problem)
 end
 
 include("visualization.jl")

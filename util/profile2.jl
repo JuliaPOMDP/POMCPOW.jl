@@ -17,7 +17,7 @@ solver = POMCPOWSolver(tree_queries=250_000,
                      rng=MersenneTwister(2))
 
 problem = LightDark1D()
-policy = POMCPPlanner2(solver, problem)
+policy = POMCPOWPlanner(solver, problem)
 ib = initial_state_distribution(problem)
 
 a = action(policy, ib)
@@ -47,7 +47,7 @@ solver = POMCPOWSolver(tree_queries=30,
                      alpha_observation=1/8,
                      rng=MersenneTwister(2))
 
-policy = POMCPPlanner2(solver, problem)
+policy = POMCPOWPlanner(solver, problem)
 a = action(policy, ib)
 blink(policy)
 =#

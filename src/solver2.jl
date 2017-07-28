@@ -1,4 +1,4 @@
-function simulate{B,S,A,O}(pomcp::POMCPPlanner2, h_node::POWTreeObsNode{B,A,O}, s::S, depth)
+function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O}, s::S, depth)
 
     tree = h_node.tree
     h = h_node.node

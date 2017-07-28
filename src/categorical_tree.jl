@@ -1,4 +1,4 @@
-type CategoricalTree{T}
+mutable struct CategoricalTree{T}
     isleaf::Bool
     item::T
     total::Float64
@@ -6,7 +6,7 @@ type CategoricalTree{T}
     lchild::CategoricalTree{T}
     rchild::CategoricalTree{T}
 
-    CategoricalTree(item, weight) = new(true, item, weight) # everything else is #undef
+    CategoricalTree{T}(item, weight) where T = new(true, item, weight) # everything else is #undef
 end
 
 CategoricalTree{T}(item::T, weight) = CategoricalTree{T}(item, weight)
@@ -54,7 +54,7 @@ function mean{T}(t::CategoricalTree{T})
     return weighted_sum/t.total
 end
 
-immutable CTWithParent{T}
+struct CTWithParent{T}
     t::CategoricalTree{T}
     p::Nullable{CTWithParent{T}}
 end
@@ -97,7 +97,7 @@ function nleaves(t::CategoricalTree)
 end
 
 #=
-type CategoricalTree{T}
+mutable struct CategoricalTree{T}
     isleaf::Vector{Bool}
     items::Vector{T}
     totals::Vector{Float64}

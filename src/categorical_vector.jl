@@ -1,8 +1,8 @@
-type CategoricalVector{T}
+mutable struct CategoricalVector{T}
     items::Vector{T}
     cdf::Vector{Float64}
 
-    CategoricalVector(item::T, weight::Float64) = new(T[item], Float64[weight])
+    CategoricalVector{T}(item::T, weight::Float64) where T = new(T[item], Float64[weight])
 end
 
 CategoricalVector{T}(item::T, weight::Float64) = CategoricalVector{T}(item, weight)

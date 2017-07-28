@@ -1,4 +1,4 @@
-type POMCPPlanner2{P,NBU,C,NA,SE,IN,IV,SolverType} <: Policy
+mutable struct POMCPOWPlanner{P,NBU,C,NA,SE,IN,IV,SolverType} <: Policy
     solver::SolverType
     problem::P
     node_sr_belief_updater::NBU
@@ -10,8 +10,8 @@ type POMCPPlanner2{P,NBU,C,NA,SE,IN,IV,SolverType} <: Policy
     tree::Nullable{Any} # this is just so you can look at the tree later
 end
 
-function POMCPPlanner2(solver, problem::POMDP)
-    POMCPPlanner2(solver,
+function POMCPOWPlanner(solver, problem::POMDP)
+    POMCPOWPlanner(solver,
                   problem,
                   solver.node_sr_belief_updater,
                   solver.criterion,
@@ -22,7 +22,7 @@ function POMCPPlanner2(solver, problem::POMDP)
                   Nullable{Any}())
 end
 
-function action{P,NBU}(pomcp::POMCPPlanner2{P,NBU}, b)
+function action{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
     S = state_type(P)
     A = action_type(P)
     O = obs_type(P)
@@ -32,7 +32,7 @@ function action{P,NBU}(pomcp::POMCPPlanner2{P,NBU}, b)
     return search(pomcp, tree)
 end
 
-function search(pomcp::POMCPPlanner2, tree::POMCPOWTree)
+function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree)
     all_terminal = true
     # gc_enable(false)
     for i in 1:pomcp.solver.tree_queries

@@ -1,5 +1,5 @@
 
-immutable POMCPOWTree{B,A,O,RB}
+struct POMCPOWTree{B,A,O,RB}
     # action nodes
     n::Vector{Int}
     v::Vector{Float64}
@@ -18,20 +18,22 @@ immutable POMCPOWTree{B,A,O,RB}
     # root
     root_belief::RB
 
-    POMCPOWTree(root_belief, sz::Int=1000) = new(sizehint!(Int[], sz),
-                                                 sizehint!(Int[], sz),
-                                                 sizehint!(Vector{Pair{O,Int}}[], sz),
-                                                 Dict{Tuple{Int,O}, Int}(),
-                                                 sizehint!(A[], sz),
-                                                 sizehint!(Int[], sz),
+    POMCPOWTree{B,A,O,RB}(root_belief, sz::Int=1000) where{B,A,O,RB} = new(
+        sizehint!(Int[], sz),
+        sizehint!(Int[], sz),
+        sizehint!(Vector{Pair{O,Int}}[], sz),
+        Dict{Tuple{Int,O}, Int}(),
+        sizehint!(A[], sz),
+        sizehint!(Int[], sz),
 
-                                                 sizehint!(Array(B,1), sz),
-                                                 sizehint!(Int[0], sz),
-                                                 sizehint!(Vector{Int}[Int[]], sz),
-                                                 Dict{Tuple{Int,A}, Int}(),
-                                                 sizehint!(Array(O,1), sz),
+        sizehint!(Array{B}(1), sz),
+        sizehint!(Int[0], sz),
+        sizehint!(Vector{Int}[Int[]], sz),
+        Dict{Tuple{Int,A}, Int}(),
+        sizehint!(Array{O}(1), sz),
 
-                                                 root_belief)
+        root_belief
+    )
 end
 
 @inline function push_anode!{B,A,O}(tree::POMCPOWTree{B,A,O}, h::Int, a::A, n::Int=0, v::Float64=0.0, update_lookup=true)
@@ -49,7 +51,7 @@ end
     return anode
 end
 
-immutable POWTreeObsNode{B,A,O,RB} <: BeliefNode{B,A,O}
+struct POWTreeObsNode{B,A,O,RB} <: BeliefNode
     tree::POMCPOWTree{B,A,O,RB}
     node::Int
 end

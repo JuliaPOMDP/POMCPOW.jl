@@ -1,14 +1,14 @@
 import JSON
 import MCTS: AbstractTreeVisualizer, node_tag, tooltip_tag, create_json, blink
 
-type POMCPOWVisualizer <: AbstractTreeVisualizer
+mutable struct POMCPOWVisualizer <: AbstractTreeVisualizer
     tree::POMCPOWTree
 end
-POMCPOWVisualizer(planner::POMCPPlanner2) = POMCPOWVisualizer(get(planner.tree))
+POMCPOWVisualizer(planner::POMCPOWPlanner) = POMCPOWVisualizer(get(planner.tree))
 
-blink(planner::POMCPPlanner2) = blink(POMCPOWVisualizer(get(planner.tree)))
+blink(planner::POMCPOWPlanner) = blink(POMCPOWVisualizer(get(planner.tree)))
 
-typealias NodeDict Dict{Int, Dict{String, Any}}
+const NodeDict = Dict{Int, Dict{String, Any}}
 
 function create_json(v::POMCPOWVisualizer)
     t = v.tree
