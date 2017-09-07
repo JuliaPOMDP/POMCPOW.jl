@@ -18,22 +18,25 @@ struct POMCPOWTree{B,A,O,RB}
     # root
     root_belief::RB
 
-    POMCPOWTree{B,A,O,RB}(root_belief, sz::Int=1000) where{B,A,O,RB} = new(
-        sizehint!(Int[], sz),
-        sizehint!(Int[], sz),
-        sizehint!(Vector{Pair{O,Int}}[], sz),
-        Dict{Tuple{Int,O}, Int}(),
-        sizehint!(A[], sz),
-        sizehint!(Int[], sz),
+    function POMCPOWTree{B,A,O,RB}(root_belief, sz::Int=1000) where{B,A,O,RB}
+        sz = min(sz, 100_000)
+        return new(
+            sizehint!(Int[], sz),
+            sizehint!(Int[], sz),
+            sizehint!(Vector{Pair{O,Int}}[], sz),
+            Dict{Tuple{Int,O}, Int}(),
+            sizehint!(A[], sz),
+            sizehint!(Int[], sz),
 
-        sizehint!(Array{B}(1), sz),
-        sizehint!(Int[0], sz),
-        sizehint!(Vector{Int}[Int[]], sz),
-        Dict{Tuple{Int,A}, Int}(),
-        sizehint!(Array{O}(1), sz),
+            sizehint!(Array{B}(1), sz),
+            sizehint!(Int[0], sz),
+            sizehint!(Vector{Int}[Int[]], sz),
+            Dict{Tuple{Int,A}, Int}(),
+            sizehint!(Array{O}(1), sz),
 
-        root_belief
-    )
+            root_belief
+        )
+    end
 end
 
 @inline function push_anode!{B,A,O}(tree::POMCPOWTree{B,A,O}, h::Int, a::A, n::Int=0, v::Float64=0.0, update_lookup=true)
