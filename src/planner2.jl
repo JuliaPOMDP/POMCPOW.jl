@@ -22,6 +22,8 @@ function POMCPOWPlanner(solver, problem::POMDP)
                   Nullable{Any}())
 end
 
+Base.srand(p::POMCPOWPlanner, seed) = srand(p.solver.rng, seed)
+
 function action{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
     S = state_type(P)
     A = action_type(P)
@@ -35,11 +37,15 @@ end
 function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree)
     all_terminal = true
     # gc_enable(false)
+    start_time = CPUtime_us()
     for i in 1:pomcp.solver.tree_queries
         s = rand(pomcp.solver.rng, tree.root_belief)
         if !POMDPs.isterminal(pomcp.problem, s)
             simulate(pomcp, POWTreeObsNode(tree, 1), s, 0)
             all_terminal = false
+        end
+        if CPUtime_us() - start_time >= pomcp.solver.max_time*1e6
+            break
         end
     end
     # gc_enable(true)

@@ -8,6 +8,7 @@ using ParticleFilters
 using Parameters
 using POMDPToolbox
 using MCTS
+using CPUTime
 
 using BasicPOMCP: convert_estimator
 
@@ -119,12 +120,13 @@ Fields:
     If it is an object `a`, `default_action(a, belief, ex)` will be called, and
     if this method is not implemented, `a` will be returned directly.
 """
-@with_kw struct POMCPOWSolver <: AbstractPOMCPSolver
+@with_kw mutable struct POMCPOWSolver <: AbstractPOMCPSolver
     eps::Float64                = 0.01
     max_depth::Int              = typemax(Int)
     criterion                   = MaxUCB(1.0)
     final_criterion             = MaxQ()
     tree_queries::Int           = 100
+    max_time::Float64           = Inf
     rng::MersenneTwister        = Base.GLOBAL_RNG
     node_sr_belief_updater      = POWNodeFilter()
 
