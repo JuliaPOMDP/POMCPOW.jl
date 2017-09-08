@@ -31,7 +31,13 @@ function action{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
     B = belief_type(NBU,P)
     tree = POMCPOWTree{B,A,O,typeof(b)}(b, 2*pomcp.solver.tree_queries)
     pomcp.tree = tree
-    return search(pomcp, tree)
+    local a::A
+    try
+        a = search(pomcp, tree)
+    catch ex
+        a = convert(A, default_action(pomcp.solver.default_action, b, ex))
+    end
+    return a
 end
 
 function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree)
