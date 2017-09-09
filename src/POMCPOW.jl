@@ -15,6 +15,8 @@ using BasicPOMCP: convert_estimator
 import Base: mean, rand, insert!
 import POMDPs: action, solve
 
+import MCTS: n_children, next_action
+
 export
     POMCPOWSolver,
     POMCPOWPlanner,
@@ -43,7 +45,6 @@ const init_V = init_Q
 include("categorical_tree.jl")
 include("categorical_vector.jl")
 include("beliefs.jl")
-
 
 include("tree.jl")
 include("criteria.jl")
