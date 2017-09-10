@@ -62,3 +62,4 @@ end
 current_obs(h::POWTreeObsNode) = h.tree.o_labels[h.node]
 belief(h::POWTreeObsNode) = ifelse(h.node==1, h.tree.root_belief, StateBelief(h.tree.sr_beliefs[h.node]))
 n_children(h::POWTreeObsNode) = length(h.tree.tried[h.node])
+isroot(h::POWTreeObsNode) = h.node==1

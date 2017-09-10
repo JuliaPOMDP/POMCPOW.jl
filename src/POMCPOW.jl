@@ -15,7 +15,7 @@ using BasicPOMCP: convert_estimator
 import Base: mean, rand, insert!
 import POMDPs: action, solve
 
-import MCTS: n_children, next_action
+import MCTS: n_children, next_action, isroot
 
 export
     POMCPOWSolver,
