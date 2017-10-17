@@ -71,6 +71,9 @@ Fields:
 - `tree_queries::Int`:
     Number of iterations during each action() call.
     default: `100`
+- `max_time::Float64`:
+    Time limit for planning at each steps (seconds).
+    default: `Inf`
 - `rng::AbstractRNG`:
     Random number generator.
     default: Base.GLOBAL_RNG
@@ -157,6 +160,6 @@ function solve(solver::POMCPOWSolver, problem::POMDP)
     return POMCPOWPlanner(solver, problem)
 end
 
-include("visualization.jl")
+# include("visualization.jl")
 
 end # module

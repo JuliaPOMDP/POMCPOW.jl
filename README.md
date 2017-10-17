@@ -59,9 +59,12 @@ Fields:
 - `tree_queries::Int`:
     Number of iterations during each action() call.
     default: `100`
+- `max_time::Float64`:
+    Time limit for planning at each steps (seconds).
+    default: `Inf`
 - `rng::AbstractRNG`:
     Random number generator.
-    default: Base.GLOBAL_RNG
+    default: `Base.GLOBAL_RNG`
 - `node_sr_belief_updater::Updater`:
     Updater for state-reward distribution at the nodes.
     default: `POWNodeFilter()`
