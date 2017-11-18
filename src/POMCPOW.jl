@@ -119,9 +119,9 @@ Fields:
     default: `RandomActionGenerator(rng)`
 - `default_action::Any`:
     Function, action, or Policy used to determine the action if POMCP fails with exception `ex`.
-    If this is a Function `f`, `f(belief, ex)` will be called.
+    If this is a Function `f`, `f(pomdp, belief, ex)` will be called.
     If this is a Policy `p`, `action(p, belief)` will be called.
-    If it is an object `a`, `default_action(a, belief, ex)` will be called, and
+    If it is an object `a`, `default_action(a, pomdp, belief, ex)` will be called, and
     if this method is not implemented, `a` will be returned directly.
 """
 @with_kw mutable struct POMCPOWSolver <: AbstractPOMCPSolver

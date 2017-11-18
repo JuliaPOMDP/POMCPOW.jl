@@ -53,7 +53,7 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
     end
     total_n = tree.total_n[h]
 
-    best_node = select_best(pomcp.criterion, h_node)
+    best_node = select_best(pomcp.criterion, h_node, pomcp.solver.rng)
     a = tree.a_labels[best_node]
 
     sp, o, r = generate_sor(pomcp.problem, s, a, sol.rng)

@@ -35,7 +35,7 @@ function action{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
     try
         a = search(pomcp, tree)
     catch ex
-        a = convert(A, default_action(pomcp.solver.default_action, b, ex))
+        a = convert(A, default_action(pomcp.solver.default_action, pomcp.problem, b, ex))
     end
     return a
 end
@@ -60,7 +60,7 @@ function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree)
         throw(AllSamplesTerminal(tree.root_belief))
     end
 
-    best_node = select_best(pomcp.solver.final_criterion, POWTreeObsNode(tree,1))
+    best_node = select_best(pomcp.solver.final_criterion, POWTreeObsNode(tree,1), pomcp.solver.rng)
 
     return tree.a_labels[best_node]
 end
