@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/JuliaPOMDP/POMCPOW.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaPOMDP/POMCPOW.jl?branch=master)
 [![codecov.io](http://codecov.io/github/JuliaPOMDP/POMCPOW.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaPOMDP/POMCPOW.jl?branch=master)
 
-POMCPOW is an online solver based on Monte Carlo tree search for POMDPs with continuous state, action, and observation spaces.
+POMCPOW is an online solver based on Monte Carlo tree search for POMDPs with continuous state, action, and observation spaces. For more information, see https://arxiv.org/abs/1709.06196.
 
 # Installation
 
@@ -12,8 +12,6 @@ POMCPOW is an online solver based on Monte Carlo tree search for POMDPs with con
 using POMDPs
 POMDPs.add("POMCPOW")
 ```
-
-(If POMCPOW is not found, use `Pkg.checkout("POMDPs")` to get the latest master of POMDPs)
 
 # Usage
 
