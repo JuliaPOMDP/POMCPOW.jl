@@ -1,4 +1,3 @@
-
 struct POMCPOWTree{B,A,O,RB}
     # action nodes
     n::Vector{Int}
@@ -11,7 +10,7 @@ struct POMCPOWTree{B,A,O,RB}
     # observation nodes
     sr_beliefs::Vector{B} # first element is #undef
     total_n::Vector{Int}
-    tried::Vector{Vector{Int}} # when we have dpw this will need to be changed to Vector{A}
+    tried::Vector{Vector{Int}}
     o_child_lookup::Dict{Tuple{Int,A}, Int} # may not be maintained based on solver params
     o_labels::Vector{O}
 

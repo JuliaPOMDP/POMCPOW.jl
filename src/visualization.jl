@@ -1,50 +1,70 @@
-import JSON
-import MCTS: AbstractTreeVisualizer, node_tag, tooltip_tag, create_json, blink
-
-mutable struct POMCPOWVisualizer <: AbstractTreeVisualizer
-    tree::POMCPOWTree
-end
-POMCPOWVisualizer(planner::POMCPOWPlanner) = POMCPOWVisualizer(get(planner.tree))
-
-blink(planner::POMCPOWPlanner) = blink(POMCPOWVisualizer(get(planner.tree)))
-
-const NodeDict = Dict{Int, Dict{String, Any}}
-
-function create_json(v::POMCPOWVisualizer)
-    t = v.tree
-    nb = length(t.sr_beliefs)
-    na = length(t.n)
-    if nb + na > 10_000
-        warn("Creating json for a tree with $(na+nb) nodes - this could take a while")
+function D3Trees.D3Tree(p::POMCPOWPlanner; title="POMCPOW Tree", kwargs...)
+    if isnull(p.tree)
+        error("POMCPOWPlanner has not constructed a tree yet, run `action(planner, belief)` first to construct the tree.")
     end
-    nd = NodeDict()
-    for id in 1:nb
-        if id == 1
-            obs = "root"
-            tt_tag = tooltip_tag(obs)
+    return D3Tree(get(p.tree); title=title, kwargs...)
+end
+
+function D3Trees.D3Tree(t::POMCPOWTree; title="POMCPOW Tree", kwargs...)
+    lenb = length(t.total_n)
+    lenba = length(t.n)
+    len = lenb + lenba
+    children = Vector{Vector{Int}}(len)
+    text = Vector{String}(len)
+    tt = fill("", len)
+    link_style = fill("", len)
+    style = fill("", len)
+    min_V = minimum(t.v)
+    max_V = maximum(t.v)
+    for b in 1:lenb
+        children[b] = t.tried[b] .+ lenb
+        text[b] = @sprintf("""
+                           o: %s
+                           N: %-10d
+                           """,
+                           b==1 ? "<root>" : node_tag(t.o_labels[b]),
+                           t.total_n[b]
+                          )
+        tt[b] = """
+                o: $(b==1 ? "<root>" : node_tag(t.o_labels[b]))
+                N: $(t.total_n[b])
+                $(length(t.tried[b])) children
+                """
+        link_width = max(1.0, 20.0*sqrt(t.total_n[b]/t.total_n[1]))
+        link_style[b] = "stroke-width:$link_width"
+    end
+    for ba in 1:lenba
+        children[ba+lenb] = collect(last(oipair) for oipair in t.generated[ba])
+        text[ba+lenb] = @sprintf("""
+                                 a: %s
+                                 N: %-7d V: %-10.3g""",
+                                 node_tag(t.a_labels[ba]), t.n[ba], t.v[ba])
+        tt[ba+lenb] = """
+                      a: $(tooltip_tag(t.a_labels[ba]))
+                      N: $(t.n[ba])
+                      V: $(t.v[ba])
+                      $(length(t.generated[ba])) children
+                      """
+        link_width = max(1.0, 20.0*sqrt(t.n[ba]/t.total_n[1]))
+        link_style[ba+lenb] = "stroke-width:$link_width"
+        rel_V = (t.v[ba]-min_V)/(max_V-min_V)
+        if isnan(rel_V)
+            color = colorant"gray"
         else
-            obs = t.o_labels[id]
-            tt_tag = "$(tooltip_tag(obs)) [$(n_items(t.sr_beliefs[id].dist)) particles]"
+            color = weighted_color_mean(rel_V, colorant"green", colorant"red")
         end
-        nd[id] = Dict("id"=>id,
-                      "type"=>:obs,
-                      "children_ids"=>Int[j+nb for j in t.tried[id]],
-                      "tag"=>node_tag(obs),
-                      "tt_tag"=>tt_tag,
-                      "N"=>t.total_n[id]
-                     )
+        style[ba+lenb] = "stroke:#$(hex(color))"
     end
-    for id in 1:na
-        a = t.a_labels[id]
-        nd[id+nb] = Dict("id"=>id+nb,
-                      "type"=>:action,
-                      "children_ids"=>Int[pair.second for pair in t.generated[id]],
-                      "tag"=>node_tag(a),
-                      "tt_tag"=>tooltip_tag(a),
-                      "N"=>t.n[id],
-                      "Q"=>t.v[id]
-                     )
-    end
-    json = JSON.json(nd)
-    return (json, 1)
+    return D3Tree(children;
+                  text=text,
+                  tooltip=tt,
+                  style=style,
+                  link_style=link_style,
+                  title=title,
+                  kwargs...
+                 )
+
 end
+
+Base.show(io::IO, mime::MIME"text/html", t::POMCPOWTree) = show(io, mime, D3Tree(t))
+Base.show(io::IO, mime::MIME"text/plain", t::POMCPOWTree) = show(io, mime, D3Tree(t))

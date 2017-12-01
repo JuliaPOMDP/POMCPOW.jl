@@ -9,13 +9,15 @@ using Parameters
 using POMDPToolbox
 using MCTS
 using CPUTime
+using D3Trees
+using Colors
 
 using BasicPOMCP: convert_estimator
 
 import Base: mean, rand, insert!
 import POMDPs: action, solve
 
-import MCTS: n_children, next_action, isroot
+import MCTS: n_children, next_action, isroot, node_tag, tooltip_tag
 
 export
     POMCPOWSolver,
@@ -70,7 +72,7 @@ Fields:
     default: `MaxQ()`
 - `tree_queries::Int`:
     Number of iterations during each action() call.
-    default: `100`
+    default: `1000`
 - `max_time::Float64`:
     Time limit for planning at each steps (seconds).
     default: `Inf`
@@ -129,7 +131,7 @@ Fields:
     max_depth::Int              = typemax(Int)
     criterion                   = MaxUCB(1.0)
     final_criterion             = MaxQ()
-    tree_queries::Int           = 100
+    tree_queries::Int           = 1000
     max_time::Float64           = Inf
     rng::MersenneTwister        = Base.GLOBAL_RNG
     node_sr_belief_updater      = POWNodeFilter()
@@ -160,6 +162,6 @@ function solve(solver::POMCPOWSolver, problem::POMDP)
     return POMCPOWPlanner(solver, problem)
 end
 
-# include("visualization.jl")
+include("visualization.jl")
 
 end # module

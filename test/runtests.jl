@@ -4,6 +4,7 @@ using Base.Test
 using POMDPModels
 using POMDPToolbox
 using ParticleFilters
+using D3Trees
 
 solver = POMCPOWSolver()
 
@@ -18,11 +19,15 @@ B = POMCPOW.belief_type(POMCPOW.POWNodeFilter, typeof(pomdp))
 tree = POMCPOWTree{B,Bool,Bool,typeof(b)}(b, 2*planner.solver.tree_queries)
 @inferred POMCPOW.simulate(planner, POMCPOW.POWTreeObsNode(tree, 1), true, 10)
 
-let
-    pomdp = LightDark1D()
-    solver = POMCPOWSolver(default_action=485)
-    planner = solve(solver, pomdp)
+pomdp = LightDark1D()
+solver = POMCPOWSolver(default_action=485)
+planner = solve(solver, pomdp)
 
-    b = ParticleCollection([LightDark1DState(-1, 0)])
-    @test action(planner, b) == 485
-end
+b = ParticleCollection([LightDark1DState(-1, 0)])
+@test action(planner, b) == 485
+
+b = initial_state_distribution(pomdp)
+action(planner, b)
+
+d3t = D3Tree(planner)
+# inchrome(d3t)
