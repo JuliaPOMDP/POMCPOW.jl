@@ -25,13 +25,6 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
                             init_V(pomcp.init_V, pomcp.problem, POWTreeObsNode(tree, h), a),
                             sol.check_repeat_act)
             end
-            if length(tree.tried[h]) <= 1
-                if depth > 0
-                    return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)
-                else
-                    return 0.0
-                end
-            end
         end
     else # run through all the actions
         if isempty(tree.tried[h])
@@ -43,12 +36,6 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
                             init_V(pomcp.init_V, pomcp.problem, POWTreeObsNode(tree, h), a),
                             false)
             end
-
-            if depth > 0 # no need for a rollout if this is the root node
-                return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, s, POWTreeObsNode(tree, h), depth)
-            else
-                return 0.0
-            end
         end
     end
     total_n = tree.total_n[h]
@@ -57,6 +44,9 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
     a = tree.a_labels[best_node]
 
     sp, o, r = generate_sor(pomcp.problem, s, a, sol.rng)
+    if r == Inf
+        warn("POMCPOW: +Inf reward. This is not recommended and may cause future errors.")
+    end
 
     new_node = false
     if tree.n_a_children[best_node] <= sol.k_observation*(tree.n[best_node]^sol.alpha_observation)
@@ -75,30 +65,27 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
             end
             tree.n_a_children[best_node] += 1
         end
-
         push!(tree.generated[best_node], o=>hao)
     end
 
-    if !new_node
+    if new_node
+        return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, sp, POWTreeObsNode(tree, hao), depth)
+    else
         pair = rand(sol.rng, tree.generated[best_node])
         o = pair.first
         hao = pair.second
         push_weighted!(tree.sr_beliefs[hao], pomcp.node_sr_belief_updater, s, sp, r)
         sp, r = rand(sol.rng, tree.sr_beliefs[hao])
+
+        R = r + POMDPs.discount(pomcp.problem)*simulate(pomcp, POWTreeObsNode(tree, hao), sp, depth+1)
+
+        tree.n[best_node] += 1
+        tree.total_n[h] += 1
+        if tree.v[best_node] != -Inf
+            tree.v[best_node] += (R-tree.v[best_node])/tree.n[best_node]
+        end
+
+        return R
     end
-
-    if r == Inf
-        warn("POMCPOW: +Inf reward. This is not recommended and may cause future errors.")
-    end
-
-    R = r + POMDPs.discount(pomcp.problem)*simulate(pomcp, POWTreeObsNode(tree, hao), sp, depth+1)
-
-    tree.n[best_node] += 1
-    tree.total_n[h] += 1
-    if tree.v[best_node] != -Inf
-        tree.v[best_node] += (R-tree.v[best_node])/tree.n[best_node]
-    end
-
-    return R
 end
 
