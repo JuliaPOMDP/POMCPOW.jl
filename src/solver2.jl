@@ -88,7 +88,7 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
     end
 
     if r == Inf
-        warn("POMCP: +Inf reward. This is not recommended and may cause future errors.")
+        warn("POMCPOW: +Inf reward. This is not recommended and may cause future errors.")
     end
 
     R = r + POMDPs.discount(pomcp.problem)*simulate(pomcp, POWTreeObsNode(tree, hao), sp, depth+1)
