@@ -69,7 +69,7 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
     end
 
     if new_node
-        return POMDPs.discount(pomcp.problem)^depth * estimate_value(pomcp.solved_estimate, pomcp.problem, sp, POWTreeObsNode(tree, hao), depth)
+        R = r + POMDPs.discount(pomcp.problem)*estimate_value(pomcp.solved_estimate, pomcp.problem, sp, POWTreeObsNode(tree, hao), depth)
     else
         pair = rand(sol.rng, tree.generated[best_node])
         o = pair.first
@@ -78,14 +78,14 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
         sp, r = rand(sol.rng, tree.sr_beliefs[hao])
 
         R = r + POMDPs.discount(pomcp.problem)*simulate(pomcp, POWTreeObsNode(tree, hao), sp, depth+1)
-
-        tree.n[best_node] += 1
-        tree.total_n[h] += 1
-        if tree.v[best_node] != -Inf
-            tree.v[best_node] += (R-tree.v[best_node])/tree.n[best_node]
-        end
-
-        return R
     end
+
+    tree.n[best_node] += 1
+    tree.total_n[h] += 1
+    if tree.v[best_node] != -Inf
+        tree.v[best_node] += (R-tree.v[best_node])/tree.n[best_node]
+    end
+
+    return R
 end
 
