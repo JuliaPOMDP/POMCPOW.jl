@@ -41,13 +41,11 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
     best_node = select_best(pomcp.criterion, h_node, pomcp.solver.rng)
     a = tree.a_labels[best_node]
 
-    sp, o, r = generate_sor(pomcp.problem, s, a, sol.rng)
-    if r == Inf
-        warn("POMCPOW: +Inf reward. This is not recommended and may cause future errors.")
-    end
-
     new_node = false
     if tree.n_a_children[best_node] <= sol.k_observation*(tree.n[best_node]^sol.alpha_observation)
+
+        sp, o, r = generate_sor(pomcp.problem, s, a, sol.rng)
+
         if sol.check_repeat_obs && haskey(tree.a_child_lookup, (best_node,o))
             hao = tree.a_child_lookup[(best_node, o)]
         else
@@ -64,6 +62,14 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
             tree.n_a_children[best_node] += 1
         end
         push!(tree.generated[best_node], o=>hao)
+    else
+
+        sp, r = generate_sr(pomcp.problem, s, a, sol.rng)
+
+    end
+
+    if r == Inf
+        warn("POMCPOW: +Inf reward. This is not recommended and may cause future errors.")
     end
 
     if new_node

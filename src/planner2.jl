@@ -24,26 +24,33 @@ end
 
 Base.srand(p::POMCPOWPlanner, seed) = srand(p.solver.rng, seed)
 
-function action{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
+
+
+function action_info{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
     S = state_type(P)
     A = action_type(P)
     O = obs_type(P)
     B = belief_type(NBU,P)
+    info = Dict{Symbol, Any}()
     tree = POMCPOWTree{B,A,O,typeof(b)}(b, 2*pomcp.solver.tree_queries)
     pomcp.tree = tree
     local a::A
     try
-        a = search(pomcp, tree)
+        a = search(pomcp, tree, info)
+        info[:tree] = tree
     catch ex
         a = convert(A, default_action(pomcp.solver.default_action, pomcp.problem, b, ex))
     end
-    return a
+    return a, info
 end
 
-function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree)
+action(pomcp::POMCPOWPlanner, b) = first(action_info(pomcp, b))
+
+function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree, info::Dict{Symbol,Any}=Dict{Symbol,Any}())
     all_terminal = true
     # gc_enable(false)
-    start_time = CPUtime_us()
+    i = 0
+    start_us = CPUtime_us()
     for i in 1:pomcp.solver.tree_queries
         s = rand(pomcp.solver.rng, tree.root_belief)
         if !POMDPs.isterminal(pomcp.problem, s)
@@ -51,11 +58,12 @@ function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree)
             simulate(pomcp, POWTreeObsNode(tree, 1), s, max_depth)
             all_terminal = false
         end
-        if CPUtime_us() - start_time >= pomcp.solver.max_time*1e6
+        if CPUtime_us() - start_us >= pomcp.solver.max_time*1e6
             break
         end
     end
-    # gc_enable(true)
+    info[:search_time_us] = CPUtime_us() - start_us
+    info[:tree_queries] = i
 
     if all_terminal
         throw(AllSamplesTerminal(tree.root_belief))
