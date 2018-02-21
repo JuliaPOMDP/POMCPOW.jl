@@ -1,4 +1,16 @@
 function D3Trees.D3Tree(p::POMCPOWPlanner; title="POMCPOW Tree", kwargs...)
+    warn("""
+         D3Tree(planner::POMCPOWPlanner) is deprecated and may be removed in the future. Instead, please use
+             
+             a, info = action_info(planner, state)
+             D3Tree(info[:tree])
+
+         Or, you can get this info from a POMDPToolbox History
+         
+             info = first(ainfo_hist(hist))
+             D3Tree(info[:tree])
+         """)
+
     if isnull(p.tree)
         error("POMCPOWPlanner has not constructed a tree yet, run `action(planner, belief)` first to construct the tree.")
     end
