@@ -98,6 +98,9 @@ Fields:
 - `check_repeat_act::Bool`:
     Check if an action was sampled multiple times. This has some dictionary maintenance overhead, but prevents multiple nodes with the same action from being created. If the action space is discrete, this should probably be used, but can be turned off for speed.
     default: `true`
+- `tree_in_info::Bool`:
+    If `true`, return the tree in the info dict when action_info is called, this can use a lot of memory if histories are being saved.
+    default: `true`
 - `k_action::Float64`, `alpha_action::Float64`, `k_observation::Float64`, `alpha_observation::Float64`:
         These constants control the double progressive widening. A new observation
         or action will be added if the number of children is less than or equal to kN^alpha.
@@ -126,6 +129,7 @@ Fields:
     If this is a Policy `p`, `action(p, belief)` will be called.
     If it is an object `a`, `default_action(a, pomdp, belief, ex)` will be called, and
     if this method is not implemented, `a` will be returned directly.
+
 """
 @with_kw mutable struct POMCPOWSolver <: AbstractPOMCPSolver
     eps::Float64                = 0.01
@@ -142,6 +146,7 @@ Fields:
     enable_action_pw::Bool      = true
     check_repeat_obs::Bool      = true
     check_repeat_act::Bool      = true
+    tree_in_info::Bool          = true
 
     alpha_observation::Float64  = 0.5
     k_observation::Float64      = 10.0

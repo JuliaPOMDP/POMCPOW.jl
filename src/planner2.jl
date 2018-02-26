@@ -37,7 +37,9 @@ function action_info{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
     local a::A
     try
         a = search(pomcp, tree, info)
-        info[:tree] = tree
+        if pomcp.solver.tree_in_info
+            info[:tree] = tree
+        end
     catch ex
         a = convert(A, default_action(pomcp.solver.default_action, pomcp.problem, b, ex))
     end
