@@ -100,7 +100,7 @@ Fields:
     default: `true`
 - `tree_in_info::Bool`:
     If `true`, return the tree in the info dict when action_info is called, this can use a lot of memory if histories are being saved.
-    default: `true`
+    default: `false`
 - `k_action::Float64`, `alpha_action::Float64`, `k_observation::Float64`, `alpha_observation::Float64`:
         These constants control the double progressive widening. A new observation
         or action will be added if the number of children is less than or equal to kN^alpha.
@@ -146,7 +146,7 @@ Fields:
     enable_action_pw::Bool      = true
     check_repeat_obs::Bool      = true
     check_repeat_act::Bool      = true
-    tree_in_info::Bool          = true
+    tree_in_info::Bool          = false
 
     alpha_observation::Float64  = 0.5
     k_observation::Float64      = 10.0

@@ -26,7 +26,7 @@ Base.srand(p::POMCPOWPlanner, seed) = srand(p.solver.rng, seed)
 
 
 
-function action_info{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
+function action_info{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b; tree_in_info=false)
     S = state_type(P)
     A = action_type(P)
     O = obs_type(P)
@@ -37,7 +37,7 @@ function action_info{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b)
     local a::A
     try
         a = search(pomcp, tree, info)
-        if pomcp.solver.tree_in_info
+        if pomcp.solver.tree_in_info || tree_in_info
             info[:tree] = tree
         end
     catch ex
