@@ -1,6 +1,6 @@
 struct POWNodeBelief{S,A,O,P}
     model::P
-    a::A
+    a::A # may be needed in push_weighted! and since a is constant for a node, we store it
     o::O
     dist::CategoricalVector{Tuple{S,Float64}}
 
