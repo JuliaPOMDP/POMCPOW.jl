@@ -39,6 +39,8 @@ export
 
     n_children,
     belief,
+    current_obs,
+    isroot,
 
     POMCPOWVisualizer,
     blink
