@@ -25,6 +25,7 @@ export
     POMCPOWPlanner,
     POMCPOWTree,
     POWNodeBelief,
+    POWTreeObsNode,
     CategoricalTree,
     CategoricalVector,
     FORollout,
@@ -39,6 +40,7 @@ export
 
     n_children,
     belief,
+    sr_belief,
     current_obs,
     isroot,
 

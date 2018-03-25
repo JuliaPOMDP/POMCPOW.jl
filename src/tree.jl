@@ -58,7 +58,26 @@ struct POWTreeObsNode{B,A,O,RB} <: BeliefNode
     node::Int
 end
 
-current_obs(h::POWTreeObsNode) = h.tree.o_labels[h.node]
-belief(h::POWTreeObsNode) = ifelse(h.node==1, h.tree.root_belief, StateBelief(h.tree.sr_beliefs[h.node]))
-n_children(h::POWTreeObsNode) = length(h.tree.tried[h.node])
 isroot(h::POWTreeObsNode) = h.node==1
+function current_obs(h::POWTreeObsNode)
+    if isroot(h)
+        error("Tried to access the observation for the root node in a POMCPOW tree")
+    else
+        return h.tree.o_labels[h.node]
+    end
+end
+function belief(h::POWTreeObsNode)
+    if isroot(h)
+        return h.tree.root_belief
+    else
+        return StateBelief(h.tree.sr_beliefs[h.node])
+    end
+end
+function sr_belief(h::POWTreeObsNode)
+    if isroot(h)
+        error("Tried to access the sr_belief for the root node in a POMCPOW tree")
+    else
+        return h.tree.sr_beliefs[h.node]
+    end
+end
+n_children(h::POWTreeObsNode) = length(h.tree.tried[h.node])
