@@ -24,15 +24,10 @@ end
 
 Base.srand(p::POMCPOWPlanner, seed) = srand(p.solver.rng, seed)
 
-
-
 function action_info{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b; tree_in_info=false)
-    S = state_type(P)
     A = action_type(P)
-    O = obs_type(P)
-    B = belief_type(NBU,P)
     info = Dict{Symbol, Any}()
-    tree = POMCPOWTree{B,A,O,typeof(b)}(b, 2*pomcp.solver.tree_queries)
+    tree = make_tree(pomcp, b)
     pomcp.tree = tree
     local a::A
     try
@@ -47,6 +42,15 @@ function action_info{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b; tree_in_info=false)
 end
 
 action(pomcp::POMCPOWPlanner, b) = first(action_info(pomcp, b))
+
+function make_tree(p::POMCPOWPlanner{P, NBU}, b) where {P, NBU}
+    S = state_type(P)
+    A = action_type(P)
+    O = obs_type(P)
+    B = belief_type(NBU,P)
+    return POMCPOWTree{B, A, O, typeof(b)}(b, 2*p.solver.tree_queries)
+end
+
 
 function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree, info::Dict{Symbol,Any}=Dict{Symbol,Any}())
     all_terminal = true
