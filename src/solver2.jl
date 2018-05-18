@@ -11,7 +11,14 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
 
     if sol.enable_action_pw
         total_n = tree.total_n[h]
-        if length(tree.tried[h]) <= sol.k_action*total_n^sol.alpha_action
+        # XXX hard coded
+        dR = d-1/2
+        if dR == 1/2
+            alphaR = 1.0
+        else
+            alphaR = 3/(10*dR-3)
+        end
+        if length(tree.tried[h]) <= sol.k_action*total_n^alphaR
             if h == 1
                 a = next_action(pomcp.next_action, pomcp.problem, tree.root_belief, POWTreeObsNode(tree, h))
             else
@@ -38,11 +45,12 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
     end
     total_n = tree.total_n[h]
 
-    best_node = select_best(pomcp.criterion, h_node, pomcp.solver.rng)
+    best_node = select_best(pomcp.criterion, h_node, d, pomcp.solver.rng)
     a = tree.a_labels[best_node]
 
     new_node = false
-    if tree.n_a_children[best_node] <= sol.k_observation*(tree.n[best_node]^sol.alpha_observation)
+    alphaD = 1/(10*d-3)
+    if tree.n_a_children[best_node] <= sol.k_observation*tree.n[best_node]^alphaD
 
         sp, o, r = generate_sor(pomcp.problem, s, a, sol.rng)
 

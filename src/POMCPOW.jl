@@ -34,6 +34,7 @@ export
     MaxUCB,
     MaxQ,
     MaxTries,
+    MaxPoly,
 
     init_N,
     init_V,
@@ -169,6 +170,7 @@ include("planner2.jl")
 include("solver2.jl")
 
 function solve(solver::POMCPOWSolver, problem::POMDP)
+    warn("ignoring alpha_action, alpha_observation")
     return POMCPOWPlanner(solver, problem)
 end
 

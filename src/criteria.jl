@@ -72,3 +72,46 @@ function select_best(crit::MaxTries, h_node::POWTreeObsNode, rng)
     end
     return best_node
 end
+
+struct MaxPoly
+    p
+end
+
+function select_best(crit::MaxPoly, h_node::POWTreeObsNode, d::Int, rng)
+    ed = 1/(2.0*crit.p)*(1.0-3.0/(10.0*d))
+    tree = h_node.tree
+    h = h_node.node
+    best_criterion_val = -Inf
+    local best_node::Int
+    istied = false
+    local tied::Vector{Int}
+    ne = tree.total_n[h]^ed
+    for node in tree.tried[h]
+        n = tree.n[node]
+        if n == 0 && ne <= 0.0
+            criterion_value = tree.v[node]
+        elseif n == 0 && tree.v[node] == -Inf
+            criterion_value = Inf
+        else
+            criterion_value = tree.v[node] + sqrt(ne/n)
+        end
+        if criterion_value > best_criterion_val
+            best_criterion_val = criterion_value
+            best_node = node
+            istied = false
+        elseif criterion_value == best_criterion_val
+            if istied
+                push!(tied, node)
+            else
+                istied = true
+                tied = [best_node, node]
+            end
+        end
+    end
+    if istied
+        return rand(rng, tied)
+    else
+        return best_node
+    end
+
+end
