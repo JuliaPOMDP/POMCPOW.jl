@@ -27,18 +27,18 @@ struct POMCPOWTree{B,A,O,RB}
             sizehint!(A[], sz),
             sizehint!(Int[], sz),
 
-            sizehint!(Array{B}(1), sz),
+            sizehint!(Array{B}(undef, 1), sz),
             sizehint!(Int[0], sz),
             sizehint!(Vector{Int}[Int[]], sz),
             Dict{Tuple{Int,A}, Int}(),
-            sizehint!(Array{O}(1), sz),
+            sizehint!(Array{O}(undef, 1), sz),
 
             root_belief
         )
     end
 end
 
-@inline function push_anode!{B,A,O}(tree::POMCPOWTree{B,A,O}, h::Int, a::A, n::Int=0, v::Float64=0.0, update_lookup=true)
+@inline function push_anode!(tree::POMCPOWTree{B,A,O}, h::Int, a::A, n::Int=0, v::Float64=0.0, update_lookup=true) where {B,A,O}
     anode = length(tree.n) + 1
     push!(tree.n, n)
     push!(tree.v, v)
