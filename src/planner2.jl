@@ -7,7 +7,7 @@ mutable struct POMCPOWPlanner{P,NBU,C,NA,SE,IN,IV,SolverType} <: Policy
     solved_estimate::SE
     init_N::IN
     init_V::IV
-    tree::Nullable{Any} # this is just so you can look at the tree later
+    tree::Union{Nothing, POMCPOWTree} # this is just so you can look at the tree later
 end
 
 function POMCPOWPlanner(solver, problem::POMDP)
@@ -19,13 +19,13 @@ function POMCPOWPlanner(solver, problem::POMDP)
                   convert_estimator(solver.estimate_value, solver, problem),
                   solver.init_N,
                   solver.init_V,
-                  Nullable{Any}())
+                  nothing)
 end
 
-Base.srand(p::POMCPOWPlanner, seed) = srand(p.solver.rng, seed)
+Random.seed!(p::POMCPOWPlanner, seed) = Random.seed!(p.solver.rng, seed)
 
-function action_info{P,NBU}(pomcp::POMCPOWPlanner{P,NBU}, b; tree_in_info=false)
-    A = action_type(P)
+function action_info(pomcp::POMCPOWPlanner{P,NBU}, b; tree_in_info=false) where {P,NBU}
+    A = actiontype(P)
     info = Dict{Symbol, Any}()
     tree = make_tree(pomcp, b)
     pomcp.tree = tree
@@ -44,9 +44,9 @@ end
 action(pomcp::POMCPOWPlanner, b) = first(action_info(pomcp, b))
 
 function make_tree(p::POMCPOWPlanner{P, NBU}, b) where {P, NBU}
-    S = state_type(P)
-    A = action_type(P)
-    O = obs_type(P)
+    S = statetype(P)
+    A = actiontype(P)
+    O = obstype(P)
     B = belief_type(NBU,P)
     return POMCPOWTree{B, A, O, typeof(b)}(b, 2*p.solver.tree_queries)
 end

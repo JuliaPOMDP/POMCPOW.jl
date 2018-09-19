@@ -5,11 +5,11 @@ mutable struct CategoricalVector{T}
     CategoricalVector{T}(item::T, weight::Float64) where T = new(T[item], Float64[weight])
 end
 
-CategoricalVector{T}(item::T, weight::Float64) = CategoricalVector{T}(item, weight)
+CategoricalVector(item::T, weight::Float64) where T = CategoricalVector{T}(item, weight)
 
 n_items(d::CategoricalVector) = length(d.items)
 
-function insert!{T}(c::CategoricalVector{T}, item::T, weight::Float64)
+function insert!(c::CategoricalVector{T}, item::T, weight::Float64) where T
     push!(c.items, item)
     push!(c.cdf, c.cdf[end]+weight)
 end
@@ -37,7 +37,7 @@ function mean(d::CategoricalVector)
     return sum/last(d.cdf)
 end
 
-function first_mean{S}(d::CategoricalVector{Tuple{S,Float64}})
+function first_mean(d::CategoricalVector{Tuple{S,Float64}}) where S
     sum = first(first(d.items))*first(d.cdf)
     for i in 2:length(d.items)
         sum += first(d.items[i])*(d.cdf[i]-d.cdf[i-1])

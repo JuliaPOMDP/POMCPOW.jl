@@ -10,7 +10,7 @@ struct POWNodeBelief{S,A,O,P}
     end
 end
 
-function POWNodeBelief{S,A,O}(model::POMDP{S,A,O}, s::S, a::A, sp::S, o::O, r::Float64)
+function POWNodeBelief(model::POMDP{S,A,O}, s::S, a::A, sp::S, o::O, r::Float64) where {S,A,O}
     POWNodeBelief{S,A,O,typeof(model)}(model, s, a, sp, o, r)
 end
 
@@ -19,8 +19,8 @@ state_mean(b::POWNodeBelief) = first_mean(b.dist)
 
 struct POWNodeFilter end
 
-belief_type{P<:POMDP}(::Type{POWNodeFilter}, ::Type{P}) = POWNodeBelief{state_type(P), action_type(P), obs_type(P), P}
-init_node_sr_belief{S,A,O,P<:POMDP}(::POWNodeFilter, p::P, s::S, a::A, sp::S, o::O, r::Float64) = POWNodeBelief(p, s, a, sp, o, r) 
+belief_type(::Type{POWNodeFilter}, ::Type{P}) where {P<:POMDP} = POWNodeBelief{statetype(P), actiontype(P), obstype(P), P}
+init_node_sr_belief(::POWNodeFilter, p::P, s::S, a::A, sp::S, o::O, r::Float64) where {S,A,O,P<:POMDP} = POWNodeBelief(p, s, a, sp, o, r) 
 function push_weighted!(b::POWNodeBelief, ::POWNodeFilter, s, sp, r)
     w = obs_weight(b.model, s, b.a, sp, b.o)
     insert!(b.dist, (sp, r), w)
