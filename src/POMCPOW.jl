@@ -28,7 +28,6 @@ export
     POMCPOWTree,
     POWNodeBelief,
     POWTreeObsNode,
-    # CategoricalTree,
     CategoricalVector,
     FORollout,
     FOValue,
@@ -51,7 +50,6 @@ export
 
 const init_V = init_Q
 
-# include("categorical_tree.jl")
 include("categorical_vector.jl")
 include("beliefs.jl")
 
