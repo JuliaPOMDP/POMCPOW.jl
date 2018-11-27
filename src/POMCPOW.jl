@@ -4,17 +4,19 @@ using POMDPs
 using BasicPOMCP
 using ParticleFilters
 using Parameters
-using POMDPToolbox
 using MCTS
 using CPUTime
 using D3Trees
 using Colors
+using Random
+using Printf
+using POMDPPolicies
 
 using BasicPOMCP: convert_estimator
 
-import Base: mean, rand, insert!
-import POMDPs: action, solve, updater
-import POMDPToolbox: action_info
+import Base: insert!
+import POMDPs: action, solve, mean, rand, updater
+import POMDPModelTools: action_info
 
 import MCTS: n_children, next_action, isroot, node_tag, tooltip_tag
 
@@ -24,7 +26,6 @@ export
     POMCPOWTree,
     POWNodeBelief,
     POWTreeObsNode,
-    CategoricalTree,
     CategoricalVector,
     FORollout,
     FOValue,
@@ -47,7 +48,6 @@ export
 
 const init_V = init_Q
 
-include("categorical_tree.jl")
 include("categorical_vector.jl")
 include("beliefs.jl")
 
@@ -140,7 +140,7 @@ Fields:
     final_criterion             = MaxQ()
     tree_queries::Int           = 1000
     max_time::Float64           = Inf
-    rng::MersenneTwister        = Base.GLOBAL_RNG
+    rng::MersenneTwister        = Random.GLOBAL_RNG
     node_sr_belief_updater      = POWNodeFilter()
 
     estimate_value::Any         = RolloutEstimator(RandomSolver(rng))

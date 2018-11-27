@@ -1,4 +1,4 @@
-function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O}, s::S, d)
+function simulate(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O}, s::S, d) where {B,S,A,O}
 
     tree = h_node.tree
     h = h_node.node
@@ -26,7 +26,7 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
         end
     else # run through all the actions
         if isempty(tree.tried[h])
-            action_space_iter = POMDPs.iterator(POMDPs.actions(pomcp.problem, h_node))
+            action_space_iter = POMDPs.actions(pomcp.problem, h_node)
             anode = length(tree.n)
             for a in action_space_iter
                 push_anode!(tree, h, a,
@@ -69,7 +69,7 @@ function simulate{B,S,A,O}(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O},
     end
 
     if r == Inf
-        warn("POMCPOW: +Inf reward. This is not recommended and may cause future errors.")
+        @warn("POMCPOW: +Inf reward. This is not recommended and may cause future errors.")
     end
 
     if new_node

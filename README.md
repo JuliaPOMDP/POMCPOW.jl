@@ -10,24 +10,31 @@ It solves problems specified using the [POMDPs.jl](https://github.com/JuliaPOMDP
 
 # Installation
 
+For Julia 1.0 and above, use the JuliaPOMDP registry:
+
 ```julia
-using POMDPs
-POMDPs.add("POMCPOW")
+import Pkg
+Pkg.add("POMDPs")
+import POMDPs
+POMDPs.add_registry()
+Pkg.add("POMCPOW")
 ```
 
 # Usage
 
 ```julia
+using POMDPs
 using POMCPOW
 using POMDPModels
-using POMDPToolbox
+using POMDPSimulators
+using POMDPPolicies
 
 solver = POMCPOWSolver(criterion=MaxUCB(20.0))
 pomdp = BabyPOMDP() # from POMDPModels
 planner = solve(solver, pomdp)
 
 hr = HistoryRecorder(max_steps=100)
-hist = simulate(hr, pomdp, planner, updater(pomdp))
+hist = simulate(hr, pomdp, planner)
 for (s, b, a, r, sp, o) in hist
     @show s, a, r, sp
 end

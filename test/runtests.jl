@@ -1,21 +1,24 @@
 using POMCPOW
-using Base.Test
+using Test
 
+using POMDPs
 using POMDPModels
-using POMDPToolbox
 using ParticleFilters
+using POMDPTesting
 using D3Trees
+using BeliefUpdaters
+using POMDPModelTools
 
 solver = POMCPOWSolver()
 
 pomdp = BabyPOMDP()
 
-test_solver(solver, pomdp, updater=updater(pomdp))
+test_solver(solver, pomdp, updater=DiscreteUpdater(pomdp))
 test_solver(solver, pomdp)
 
 # make sure internal function is type stable
 planner = solve(solver, pomdp)
-b = initial_state_distribution(pomdp)
+b = initialstate_distribution(pomdp)
 B = POMCPOW.belief_type(POMCPOW.POWNodeFilter, typeof(pomdp))
 tree = POMCPOWTree{B,Bool,Bool,typeof(b)}(b, 2*planner.solver.tree_queries)
 @inferred POMCPOW.simulate(planner, POMCPOW.POWTreeObsNode(tree, 1), true, 10)
@@ -28,7 +31,7 @@ planner = solve(solver, pomdp)
 b = ParticleCollection([LightDark1DState(-1, 0)])
 @test @inferred(action(planner, b)) == 485
 
-b = initial_state_distribution(pomdp)
+b = initialstate_distribution(pomdp)
 @inferred action(planner, b)
 
 a, info = action_info(planner, b)
