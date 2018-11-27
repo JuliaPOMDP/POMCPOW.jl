@@ -11,6 +11,7 @@ solver = POMCPOWSolver()
 pomdp = BabyPOMDP()
 
 test_solver(solver, pomdp, updater=updater(pomdp))
+test_solver(solver, pomdp)
 
 # make sure internal function is type stable
 planner = solve(solver, pomdp)

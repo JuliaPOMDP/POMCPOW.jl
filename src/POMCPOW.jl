@@ -1,5 +1,3 @@
-__precompile__()
-
 module POMCPOW
 
 using POMDPs
@@ -15,7 +13,7 @@ using Colors
 using BasicPOMCP: convert_estimator
 
 import Base: mean, rand, insert!
-import POMDPs: action, solve
+import POMDPs: action, solve, updater
 import POMDPToolbox: action_info
 
 import MCTS: n_children, next_action, isroot, node_tag, tooltip_tag
@@ -172,6 +170,7 @@ function solve(solver::POMCPOWSolver, problem::POMDP)
     return POMCPOWPlanner(solver, problem)
 end
 
+include("updater.jl")
 include("visualization.jl")
 
 end # module
