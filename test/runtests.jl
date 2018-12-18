@@ -35,10 +35,12 @@ b = initialstate_distribution(pomdp)
 @inferred action(planner, b)
 
 a, info = action_info(planner, b)
-d3t = D3Tree(planner)
+# d3t = D3Tree(planner)
 @test_throws KeyError d3t = D3Tree(info[:tree])
 
 a, info = action_info(planner, b, tree_in_info=true)
-d3t = D3Tree(planner)
+# d3t = D3Tree(planner)
 d3t = D3Tree(info[:tree])
 # inchrome(d3t)
+
+include("init_node_sr_belief_error.jl")

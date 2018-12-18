@@ -51,7 +51,9 @@ function simulate(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O}, s::S, d)
         else
             new_node = true
             hao = length(tree.sr_beliefs) + 1
-            push!(tree.sr_beliefs, init_node_sr_belief(pomcp.node_sr_belief_updater, pomcp.problem, s, a, sp, o, r))
+            push!(tree.sr_beliefs,
+                  init_node_sr_belief(pomcp.node_sr_belief_updater,
+                                      pomcp.problem, s, a, sp, o, r))
             push!(tree.total_n, 0)
             push!(tree.tried, Int[])
             push!(tree.o_labels, o)
