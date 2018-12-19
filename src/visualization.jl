@@ -46,7 +46,7 @@ function D3Trees.D3Tree(t::POMCPOWTree; title="POMCPOW Tree", kwargs...)
         link_style[b] = "stroke-width:$link_width"
     end
     for ba in 1:lenba
-        children[ba+lenb] = collect(last(oipair) for oipair in t.generated[ba])
+        children[ba+lenb] = collect(unique(last(oipair) for oipair in t.generated[ba]))
         text[ba+lenb] = @sprintf("""
                                  a: %s
                                  N: %-7d V: %-10.3g""",
