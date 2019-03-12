@@ -36,6 +36,7 @@ function action_info(pomcp::POMCPOWPlanner{P,NBU}, b; tree_in_info=false) where 
             info[:tree] = tree
         end
     catch ex
+        @warn "There was an exception while computing the action.\n Exception was: $ex"
         a = convert(A, default_action(pomcp.solver.default_action, pomcp.problem, b, ex))
     end
     return a, info
