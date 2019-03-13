@@ -29,6 +29,7 @@ solver = POMCPOWSolver(default_action=485)
 planner = solve(solver, pomdp)
 
 b = ParticleCollection([LightDark1DState(-1, 0)])
+println("There should be a warning about a default action below")
 @test @inferred(action(planner, b)) == 485
 
 b = initialstate_distribution(pomdp)
