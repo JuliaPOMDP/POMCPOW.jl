@@ -48,7 +48,8 @@ function make_tree(p::POMCPOWPlanner{P, NBU}, b) where {P, NBU}
     A = actiontype(P)
     O = obstype(P)
     B = belief_type(NBU,P)
-    return POMCPOWTree{B, A, O, typeof(b)}(b, 2*p.solver.tree_queries)
+    return POMCPOWTree{B, A, O, typeof(b)}(b, 2*min(100_000, p.solver.tree_queries))
+    # return POMCPOWTree{B, A, O, typeof(b)}(b, 2*p.solver.tree_queries)
 end
 
 
