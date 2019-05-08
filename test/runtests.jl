@@ -16,7 +16,11 @@ pomdp = BabyPOMDP()
 test_solver(solver, pomdp, updater=DiscreteUpdater(pomdp))
 test_solver(solver, pomdp)
 
+solver = POMCPOWSolver(max_time=0.1, tree_queries=typemax(Int))
+test_solver(solver, pomdp, updater=DiscreteUpdater(pomdp))
+
 # make sure internal function is type stable
+solver = POMCPOWSolver()
 planner = solve(solver, pomdp)
 b = initialstate_distribution(pomdp)
 B = POMCPOW.belief_type(POMCPOW.POWNodeFilter, typeof(pomdp))

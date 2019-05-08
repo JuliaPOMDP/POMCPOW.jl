@@ -25,4 +25,6 @@ POMDPTesting = "92e6a534-49c2-5324-9027-86e3c861ab81"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["POMDPModels", "POMDPTesting", "Test", "Distributions", "BeliefUpdaters"]
+test = ["BeliefUpdaters", "Distributions", "POMDPModels", "POMDPTesting", "Test"]
+
+
