@@ -35,8 +35,6 @@ end
 POMDPs.actions(m::SimplePOMDP) = [-1, 1]
 POMDPs.states(m::SimplePOMDP) = 1:7
 POMDPs.actionindex(m::SimplePOMDP, a::Int) = a == 1 ? 1 : 2
-POMDPs.n_states(m::SimplePOMDP) = 7
-POMDPs.n_actions(m::SimplePOMDP) = 2
 
 pomdp = SimplePOMDP(0.7)
 
