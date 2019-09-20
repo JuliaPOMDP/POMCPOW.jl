@@ -26,7 +26,11 @@ function simulate(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O}, s::S, d)
         end
     else # run through all the actions
         if isempty(tree.tried[h])
-            action_space_iter = POMDPs.actions(pomcp.problem, h_node)
+            if h == 1
+                action_space_iter = POMDPs.actions(pomcp.problem, tree.root_belief)
+            else
+                action_space_iter = POMDPs.actions(pomcp.problem, StateBelief(tree.sr_beliefs[h]))
+            end
             anode = length(tree.n)
             for a in action_space_iter
                 push_anode!(tree, h, a,

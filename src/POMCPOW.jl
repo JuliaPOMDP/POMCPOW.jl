@@ -43,10 +43,7 @@ export
     isroot,
 
     POMCPOWVisualizer,
-    blink,
-
-    # deprecated
-    current_obs
+    blink
 
 const init_V = init_Q
 

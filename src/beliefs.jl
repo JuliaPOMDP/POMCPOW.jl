@@ -33,9 +33,11 @@ function push_weighted!(b::POWNodeBelief, ::POWNodeFilter, s, sp, r)
     insert!(b.dist, (sp, convert(Float64, r)), w)
 end
 
-struct StateBelief{SRB}
+struct StateBelief{SRB<:POWNodeBelief}
     sr_belief::SRB
 end
 
 rand(rng::AbstractRNG, b::StateBelief) = first(rand(rng, b.sr_belief))
 mean(b::StateBelief) = state_mean(b.sr_belief)
+POMDPs.currentobs(b::StateBelief) = currentobs(b.sr_belief)
+POMDPs.history(b::StateBelief) = history(b.sr_belief)

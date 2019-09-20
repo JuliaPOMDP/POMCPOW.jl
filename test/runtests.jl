@@ -50,14 +50,18 @@ using POMDPModelTools
         B = POMCPOW.belief_type(POMCPOW.POWNodeFilter, typeof(pomdp))
         tree = POMCPOWTree{B,Bool,Bool,typeof(b)}(b, 2*planner.solver.tree_queries)
 
-        # we can't call current obs on the root node
         n = POMCPOW.POWTreeObsNode(tree, 1)
-        @test_throws ErrorException currentobs(n)
+        nb = belief(n)
+        # we can't call current obs on the root node
+        @test_throws MethodError currentobs(nb)
         # simulate the tree to expand one step
         POMCPOW.simulate(planner, n, true, 1)
         n = POMCPOW.POWTreeObsNode(tree, 2)
-        @test currentobs(n) isa Bool
-        @test currentobs(n) == history(n)[end].o
+        nb = belief(n)
+        # but at a non-root node, this should work
+        @test currentobs(nb) isa Bool
+        @test currentobs(nb) == history(nb)[end].o
+        @test history(nb)[end].a isa Bool
     end;
 
     @testset "D3tree" begin
