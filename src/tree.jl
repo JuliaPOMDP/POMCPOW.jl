@@ -59,14 +59,7 @@ struct POWTreeObsNode{B,A,O,RB} <: BeliefNode
 end
 
 isroot(h::POWTreeObsNode) = h.node==1
-function current_obs(h::POWTreeObsNode)
-    if isroot(h)
-        error("Tried to access the observation for the root node in a POMCPOW tree")
-    else
-        return h.tree.o_labels[h.node]
-    end
-end
-function belief(h::POWTreeObsNode)
+@inline function belief(h::POWTreeObsNode)
     if isroot(h)
         return h.tree.root_belief
     else

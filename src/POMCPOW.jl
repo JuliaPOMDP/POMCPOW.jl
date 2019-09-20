@@ -15,7 +15,7 @@ using POMDPPolicies
 using BasicPOMCP: convert_estimator
 
 import Base: insert!
-import POMDPs: action, solve, mean, rand, updater
+import POMDPs: action, solve, mean, rand, updater, currentobs, history
 import POMDPModelTools: action_info
 
 import MCTS: n_children, next_action, isroot, node_tag, tooltip_tag
@@ -40,7 +40,6 @@ export
     n_children,
     belief,
     sr_belief,
-    current_obs,
     isroot,
 
     POMCPOWVisualizer,
