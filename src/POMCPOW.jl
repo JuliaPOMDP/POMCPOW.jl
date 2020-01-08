@@ -132,14 +132,14 @@ Fields:
     if this method is not implemented, `a` will be returned directly.
 
 """
-@with_kw mutable struct POMCPOWSolver <: AbstractPOMCPSolver
+@with_kw mutable struct POMCPOWSolver{RNG<:AbstractRNG} <: AbstractPOMCPSolver
     eps::Float64                = 0.01
     max_depth::Int              = typemax(Int)
     criterion                   = MaxUCB(1.0)
     final_criterion             = MaxQ()
     tree_queries::Int           = 1000
     max_time::Float64           = Inf
-    rng::MersenneTwister        = Random.GLOBAL_RNG
+    rng::RNG                    = Random.GLOBAL_RNG
     node_sr_belief_updater      = POWNodeFilter()
 
     estimate_value::Any         = RolloutEstimator(RandomSolver(rng))
