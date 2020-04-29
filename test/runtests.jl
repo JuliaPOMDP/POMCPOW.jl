@@ -8,6 +8,7 @@ using POMDPTesting
 using D3Trees
 using BeliefUpdaters
 using POMDPModelTools
+using POMDPPolicies
 
 @testset "all" begin
 
@@ -79,6 +80,14 @@ using POMDPModelTools
         d3t = D3Tree(info[:tree])
         # inchrome(d3t)
     end;
+
+    @testset "actionvalues" begin
+        pomdp = BabyPOMDP()
+        solver = POMCPOWSolver()
+        planner = solve(solver, pomdp)
+        b = initialstate_distribution(pomdp)
+        @test actionvalues(planner, b) isa AbstractVector
+    end
 
     @testset "init_node_sr_belief_error" begin
         include("init_node_sr_belief_error.jl")

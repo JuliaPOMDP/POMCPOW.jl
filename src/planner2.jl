@@ -43,6 +43,17 @@ end
 
 action(pomcp::POMCPOWPlanner, b) = first(action_info(pomcp, b))
 
+function POMDPPolicies.actionvalues(p::POMCPOWPlanner, b)
+    tree = make_tree(p, b)
+    search(p, tree)
+    values = Vector{Union{Float64,Missing}}(missing, length(actions(p.problem)))
+    for anode in tree.tried[1]
+        a = tree.a_labels[anode]
+        values[actionindex(p.problem, a)] = tree.v[anode]
+    end
+    return values
+end
+
 function make_tree(p::POMCPOWPlanner{P, NBU}, b) where {P, NBU}
     S = statetype(P)
     A = actiontype(P)
