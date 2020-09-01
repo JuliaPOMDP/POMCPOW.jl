@@ -18,8 +18,17 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
-POMDPs = "0.7.3, 0.8"
-julia = "^1.1"
+POMDPs = "0.9"
+julia = "1.1"
+BasicPOMCP = "0.3"
+CPUTime = "1"
+Colors = "0.12"
+D3Trees = "0.3"
+MCTS = "0.4"
+POMDPModelTools = "0.3"
+POMDPPolicies = "0.3"
+Parameters = "0.12"
+ParticleFilters = "0.5"
 
 [extras]
 BeliefUpdaters = "8bb6e9a1-7d73-552c-a44a-e5dc5634aac4"

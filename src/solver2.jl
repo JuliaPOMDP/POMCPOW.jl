@@ -48,7 +48,7 @@ function simulate(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O}, s::S, d)
     new_node = false
     if tree.n_a_children[best_node] <= sol.k_observation*(tree.n[best_node]^sol.alpha_observation)
 
-        sp, o, r = gen(DDNOut(:sp, :o, :r), pomcp.problem, s, a, sol.rng)
+        sp, o, r = @gen(:sp, :o, :r)(pomcp.problem, s, a, sol.rng)
 
         if sol.check_repeat_obs && haskey(tree.a_child_lookup, (best_node,o))
             hao = tree.a_child_lookup[(best_node, o)]
@@ -70,7 +70,7 @@ function simulate(pomcp::POMCPOWPlanner, h_node::POWTreeObsNode{B,A,O}, s::S, d)
         push!(tree.generated[best_node], o=>hao)
     else
 
-        sp, r = gen(DDNOut(:sp, :r), pomcp.problem, s, a, sol.rng)
+        sp, r = @gen(:sp, :r)(pomcp.problem, s, a, sol.rng)
 
     end
 
