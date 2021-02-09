@@ -26,7 +26,7 @@ Colors = "0.12"
 D3Trees = "0.3"
 MCTS = "0.4"
 POMDPModelTools = "0.3"
-POMDPPolicies = "0.3"
+POMDPPolicies = "0.3, 0.4"
 Parameters = "0.12"
 ParticleFilters = "0.5"
 
