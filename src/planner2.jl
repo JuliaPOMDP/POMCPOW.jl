@@ -69,7 +69,8 @@ function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree, info::Dict{Symbol,Any}
     # gc_enable(false)
     i = 0
     start_us = CPUtime_us()
-    for i in 1:pomcp.solver.tree_queries
+    while i < pomcp.solver.tree_queries
+        i += 1
         s = rand(pomcp.solver.rng, tree.root_belief)
         if !POMDPs.isterminal(pomcp.problem, s)
             max_depth = min(pomcp.solver.max_depth, ceil(Int, log(pomcp.solver.eps)/log(discount(pomcp.problem))))
