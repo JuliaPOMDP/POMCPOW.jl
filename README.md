@@ -118,3 +118,6 @@ Fields:
     If this is a Policy `p`, `action(p, belief)` will be called.
     If it is an object `a`, `default_action(a, belief, ex)` will be called, and
     if this method is not implemented, `a` will be returned directly.
+
+
+Check out [VDPTag2.jl](https://github.com/zsunberg/VDPTag2.jl/blob/master/README.md) for an additional problem that is solved by POMCPOW. 
