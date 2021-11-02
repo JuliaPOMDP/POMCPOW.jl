@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/JuliaPOMDP/POMCPOW.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaPOMDP/POMCPOW.jl?branch=master)
 [![codecov.io](http://codecov.io/github/JuliaPOMDP/POMCPOW.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaPOMDP/POMCPOW.jl?branch=master)
 
-POMCPOW is an online solver based on Monte Carlo tree search for POMDPs with continuous state, action, and observation spaces. For more information, see https://arxiv.org/abs/1709.06196.
+POMCPOW is an online solver based on Monte Carlo tree search for POMDPs with continuous state, action, and observation spaces. For more information, see https://arxiv.org/abs/1709.06196 (code to reproduce the experiments in this paper can be found [here](https://github.com/zsunberg/ContinuousPOMDPTreeSearchExperiments.jl)).
 
 It solves problems specified using the [POMDPs.jl](https://github.com/JuliaPOMDP/POMDPs.jl) interface. The requirements are the same as for an importance-sampling particle filter - a generative model for the dynamics and an explicit observation model.
 
