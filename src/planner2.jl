@@ -65,10 +65,11 @@ end
 
 
 function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree, info::Dict{Symbol,Any}=Dict{Symbol,Any}())
+    timer = pomcp.solver.timer
     all_terminal = true
     # gc_enable(false)
     i = 0
-    start_us = CPUtime_us()
+    t0 = timer()
     while i < pomcp.solver.tree_queries
         i += 1
         s = rand(pomcp.solver.rng, tree.root_belief)
@@ -77,11 +78,11 @@ function search(pomcp::POMCPOWPlanner, tree::POMCPOWTree, info::Dict{Symbol,Any}
             simulate(pomcp, POWTreeObsNode(tree, 1), s, max_depth)
             all_terminal = false
         end
-        if CPUtime_us() - start_us >= pomcp.solver.max_time*1e6
+        if timer() - t0 >= pomcp.solver.max_time
             break
         end
     end
-    info[:search_time_us] = CPUtime_us() - start_us
+    info[:search_time] = timer() - t0
     info[:tree_queries] = i
 
     if all_terminal
