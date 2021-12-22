@@ -5,7 +5,6 @@ using BasicPOMCP
 using ParticleFilters
 using Parameters
 using MCTS
-using CPUTime
 using D3Trees
 using Colors
 using Random
