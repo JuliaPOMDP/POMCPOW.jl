@@ -65,7 +65,7 @@ Fields:
     default: `MaxQ()`
 - `tree_queries::Int`:
     Number of iterations during each action() call.
-    default: `100`
+    default: `1000`
 - `max_time::Float64`:
     Time limit for planning at each steps (seconds).
     default: `Inf`
