@@ -55,7 +55,7 @@ function D3Trees.D3Tree(t::POMCPOWTree; title="POMCPOW Tree", kwargs...)
                       a: $(tooltip_tag(t.a_labels[ba]))
                       N: $(t.n[ba])
                       V: $(t.v[ba])
-                      $(length(t.generated[ba])) children
+                      $(length(unique(t.generated[ba]))) children
                       """
         link_width = max(1.0, 20.0*sqrt(t.n[ba]/t.total_n[1]))
         link_style[ba+lenb] = "stroke-width:$link_width"
