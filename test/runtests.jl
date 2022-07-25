@@ -4,11 +4,8 @@ using Test
 using POMDPs
 using POMDPModels
 using ParticleFilters
-using POMDPTesting
+using POMDPTools
 using D3Trees
-using BeliefUpdaters
-using POMDPModelTools
-using POMDPPolicies
 
 @testset "all" begin
 

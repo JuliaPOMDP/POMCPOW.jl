@@ -24,7 +24,7 @@ end
 
 Random.seed!(p::POMCPOWPlanner, seed) = Random.seed!(p.solver.rng, seed)
 
-function action_info(pomcp::POMCPOWPlanner{P,NBU}, b; tree_in_info=false) where {P,NBU}
+function POMDPTools.action_info(pomcp::POMCPOWPlanner{P,NBU}, b; tree_in_info=false) where {P,NBU}
     A = actiontype(P)
     info = Dict{Symbol, Any}()
     tree = make_tree(pomcp, b)
@@ -43,7 +43,7 @@ end
 
 action(pomcp::POMCPOWPlanner, b) = first(action_info(pomcp, b))
 
-function POMDPPolicies.actionvalues(p::POMCPOWPlanner, b)
+function POMDPTools.actionvalues(p::POMCPOWPlanner, b)
     tree = make_tree(p, b)
     search(p, tree)
     values = Vector{Union{Float64,Missing}}(missing, length(actions(p.problem)))
