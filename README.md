@@ -1,8 +1,7 @@
 # POMCPOW
 
-[![Build Status](https://travis-ci.org/JuliaPOMDP/POMCPOW.jl.svg?branch=master)](https://travis-ci.org/JuliaPOMDP/POMCPOW.jl)
-[![Coverage Status](https://coveralls.io/repos/JuliaPOMDP/POMCPOW.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaPOMDP/POMCPOW.jl?branch=master)
-[![codecov.io](http://codecov.io/github/JuliaPOMDP/POMCPOW.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaPOMDP/POMCPOW.jl?branch=master)
+[![CI](https://github.com/JuliaPOMDP/POMCPOW.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaPOMDP/POMCPOW.jl/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/JuliaPOMDP/POMCPOW.jl/branch/master/graph/badge.svg?token=db9lUpDijK)](https://codecov.io/gh/JuliaPOMDP/POMCPOW.jl)
 
 POMCPOW is an online solver based on Monte Carlo tree search for POMDPs with continuous state, action, and observation spaces. For more information, see https://arxiv.org/abs/1709.06196 (code to reproduce the experiments in this paper can be found [here](https://github.com/zsunberg/ContinuousPOMDPTreeSearchExperiments.jl)).
 
