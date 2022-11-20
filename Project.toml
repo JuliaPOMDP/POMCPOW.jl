@@ -16,10 +16,10 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
-BasicPOMCP = "0.3"
+BasicPOMCP = "0.3.8"
 Colors = "0.12"
 D3Trees = "0.3"
-MCTS = "0.4"
+MCTS = "0.5"
 POMDPs = "0.9"
 POMDPTools = "0.1"
 Parameters = "0.12"
