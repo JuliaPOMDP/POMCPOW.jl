@@ -26,8 +26,7 @@ Pkg.add("POMCPOW")
 using POMDPs
 using POMCPOW
 using POMDPModels
-using POMDPSimulators
-using POMDPPolicies
+using POMDPTools
 
 solver = POMCPOWSolver(criterion=MaxUCB(20.0))
 pomdp = BabyPOMDP() # from POMDPModels
