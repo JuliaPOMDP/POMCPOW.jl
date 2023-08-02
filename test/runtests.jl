@@ -24,7 +24,7 @@ using D3Trees
         pomdp = BabyPOMDP()
         solver = POMCPOWSolver()
         planner = solve(solver, pomdp)
-        b = initialstate_distribution(pomdp)
+        b = initialstate(pomdp)
         B = POMCPOW.belief_type(POMCPOW.POWNodeFilter, typeof(pomdp))
         tree = POMCPOWTree{B,Bool,Bool,typeof(b)}(b, 2*planner.solver.tree_queries)
         @inferred POMCPOW.simulate(planner, POMCPOW.POWTreeObsNode(tree, 1), true, 10)
@@ -36,7 +36,7 @@ using D3Trees
         b = ParticleCollection([LightDark1DState(-1, 0)])
         @test @test_logs (:warn,) @inferred(action(planner, b)) == 485
 
-        b = initialstate_distribution(pomdp)
+        b = initialstate(pomdp)
         @inferred action(planner, b)
     end;
 
@@ -44,7 +44,7 @@ using D3Trees
         pomdp = BabyPOMDP()
         solver = POMCPOWSolver()
         planner = solve(solver, pomdp)
-        b = initialstate_distribution(pomdp)
+        b = initialstate(pomdp)
         B = POMCPOW.belief_type(POMCPOW.POWNodeFilter, typeof(pomdp))
         tree = POMCPOWTree{B,Bool,Bool,typeof(b)}(b, 2*planner.solver.tree_queries)
 
@@ -67,7 +67,7 @@ using D3Trees
         pomdp = BabyPOMDP()
         solver = POMCPOWSolver()
         planner = solve(solver, pomdp)
-        b = initialstate_distribution(pomdp)
+        b = initialstate(pomdp)
         a, info = action_info(planner, b)
         # d3t = D3Tree(planner)
         @test_throws KeyError d3t = D3Tree(info[:tree])
@@ -82,7 +82,7 @@ using D3Trees
         pomdp = BabyPOMDP()
         solver = POMCPOWSolver()
         planner = solve(solver, pomdp)
-        b = initialstate_distribution(pomdp)
+        b = initialstate(pomdp)
         @test actionvalues(planner, b) isa AbstractVector
     end
 
