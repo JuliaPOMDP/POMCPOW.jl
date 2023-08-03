@@ -89,4 +89,8 @@ using D3Trees
     @testset "init_node_sr_belief_error" begin
         include("init_node_sr_belief_error.jl")
     end;
+
+    @testset "Discussion 513" begin
+        include("discussion_513.jl")
+    end
 end;
