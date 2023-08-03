@@ -18,18 +18,22 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 [compat]
 BasicPOMCP = "0.3.8"
 Colors = "0.12"
+CommonRLSpaces = "0.2"
 D3Trees = "0.3"
 MCTS = "0.5"
-POMDPs = "0.9"
 POMDPTools = "0.1"
+POMDPs = "0.9"
 Parameters = "0.12"
 ParticleFilters = "0.5"
+StaticArrays = "1"
 julia = "1.1"
 
 [extras]
+CommonRLSpaces = "408f5b3e-f2a2-48a6-b4bb-c8aa44c458e6"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 POMDPModels = "355abbd5-f08e-5560-ac9e-8b5f2592a0ca"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Distributions", "POMDPModels", "Test"]
+test = ["CommonRLSpaces", "Distributions", "POMDPModels", "StaticArrays", "Test"]
