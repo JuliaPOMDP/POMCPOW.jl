@@ -1,6 +1,3 @@
-using POMCPOW
-using Base.Test
-
 t = CategoricalTree(1, 1.0)
 @test POMCPOW.nleaves(t) == 1
 insert!(t, 2, 3.0)
