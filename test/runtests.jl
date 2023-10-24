@@ -7,6 +7,8 @@ using ParticleFilters
 using POMDPTools
 using D3Trees
 
+import Random
+
 @testset "all" begin
 
     @testset "POMDPTesting" begin
@@ -84,6 +86,10 @@ using D3Trees
         planner = solve(solver, pomdp)
         b = initialstate(pomdp)
         @test actionvalues(planner, b) isa AbstractVector
+    end
+
+    @testset "categorical vector" begin
+        include("categorical_vector.jl")
     end
 
     @testset "init_node_sr_belief_error" begin

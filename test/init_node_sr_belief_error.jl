@@ -24,7 +24,7 @@ function POMDPs.reward(m::SimplePOMDP, s::Int, a::Int, sp::Int)
     end
 end
 
-function POMDPs.initialstate_distribution(m::SimplePOMDP)
+function POMDPs.initialstate(m::SimplePOMDP)
     return SparseCat(1:7, ones(7) ./ 7)
 end
 

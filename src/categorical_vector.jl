@@ -2,14 +2,14 @@ mutable struct CategoricalVector{T}
     items::Vector{T}
     cdf::Vector{Float64}
 
-    CategoricalVector{T}(item::T, weight::Float64) where T = new(T[item], Float64[weight])
+    CategoricalVector{T}(item::T, weight) where T = new(T[item], Float64[weight])
 end
 
-CategoricalVector(item::T, weight::Float64) where T = CategoricalVector{T}(item, weight)
+CategoricalVector(item::T, weight) where T = CategoricalVector{T}(item, weight)
 
 n_items(d::CategoricalVector) = length(d.items)
 
-function insert!(c::CategoricalVector{T}, item::T, weight::Float64) where T
+function insert!(c::CategoricalVector, item, weight)
     push!(c.items, item)
     push!(c.cdf, c.cdf[end]+weight)
 end
