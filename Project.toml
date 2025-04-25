@@ -24,7 +24,7 @@ MCTS = "0.5"
 POMDPTools = "0.1, 1"
 POMDPs = "0.9, 1"
 Parameters = "0.12"
-ParticleFilters = "0.5"
+ParticleFilters = "0.5, 0.6"
 StaticArrays = "1"
 julia = "1.1"
 
