@@ -14,9 +14,6 @@ For Julia 1.0 and above, use the JuliaPOMDP registry:
 
 ```julia
 import Pkg
-Pkg.add("POMDPs")
-import POMDPs
-POMDPs.add_registry()
 Pkg.add("POMCPOW")
 ```
 
